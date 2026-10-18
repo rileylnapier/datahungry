@@ -117,6 +117,10 @@ Play
   There is no boss or hallucination minigame in this chapter.
   Learn 6 cats and 6 dogs, then build Photo Sorter at home for 60 points.
   New image jobs run twice as fast. Visit the laptop to activate routing snippets.
+  The map and Network workshop show a code-source guide: first find cat/dog photos,
+  then build Photo Sorter, then Go to code source. Device destinations stop within
+  activation range of the laptop, not at the center of its room. Code stays hidden
+  until the workstation is connected; the Starter Analyzer handles code for free.
   Learn 8 routing snippets, then build Auto Sort for 80 points: a second text/code
   worker appears at home. Both handlers are fixed recipes, not generated code.
   Ordinary code knowledge does not count as routing samples. Samples are learned

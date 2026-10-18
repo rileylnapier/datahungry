@@ -62,15 +62,15 @@ test('benchmark content is balanced and rejects invalid cards, thresholds and du
 
 test('cat and dog learning builds a faster photo handler; routing learning builds a second worker',()=>{
   let s=createState({unlocked:true,points:500,knowledge:{text:60},base:{imageMuncher:true},levels:{capacity:5}});
-  assert.equal(buildProgram(s,'photoSorter'),false);assert.equal(codeAvailable(s),false);
-  assert.equal(visitDevice(s,'developer'),false);assert.equal(visitDevice(s,'photos'),true);
+  assert.equal(buildProgram(s,'photoSorter'),false);assert.equal(codeAvailable(s),true);
+  assert.equal(visitDevice(s,'developer'),true);assert.equal(visitDevice(s,'photos'),true);
   for(const profile of ['cat','dog'])for(let i=0;i<6;i++)assert.equal(collect(s,'image',false,2,profile),true);
   bank(s);assert.equal(s.samples.cat,0);processBase(s,12);
   assert.equal(s.samples.cat,6);assert.equal(s.samples.dog,6);
   s=readSave({getItem:()=>serialize(s)});const points=s.points;
   assert.equal(buildProgram(s,'photoSorter'),true);assert.equal(s.points,points-60);assert.equal(buildProgram(s,'photoSorter'),false);
   collect(s,'image',false,2,'cat');bank(s);assert.equal(processBase(s,.5),8);
-  assert.equal(codeAvailable(s),false);assert.equal(visitDevice(s,'developer'),true);assert.equal(codeAvailable(s),true);
+  assert.equal(codeAvailable(s),true);assert.equal(visitDevice(s,'developer'),false);assert.equal(codeAvailable(s),true);
   for(let i=0;i<8;i++)collect(s,'code',false,3,'routing');bank(s);
   processBase(s,36);assert.equal(s.samples.routing,8);assert.equal(buildProgram(s,'autoSort'),true);
   collect(s,'text');collect(s,'text');bank(s);processBase(s,.5);
@@ -86,7 +86,7 @@ test('chapter validation rejects invalid profiles and balance; legacy unlock rem
   assert.equal(s.unlocked,true);assert.equal(s.samples.routing,0);
   assert.equal(collect(s,'text',false,1,'cat'),false);
   assert.equal(s.cargo.length,0);assert.equal(starter.bosses[0].enabled,false);
-  assert.equal(starter.areas[1].hallucinations.count,0);assert.equal(starter.areas[1].hostiles.length,2);
+  assert.equal(starter.areas[1].hallucinations.count,0);assert.equal(starter.areas[1].hostiles.length,3);
 });
 
  test('vat trial gate uses both knowledge goals, regardless of points or purchased upgrades',()=>{

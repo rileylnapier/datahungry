@@ -18,7 +18,7 @@ export function upgradeStorage(state,type){
   if(!STORAGE_TYPES.includes(type)||state.points<storageCost(state,type))return false;
   state.points-=storageCost(state,type);state.base.storageLevels[type]++;return true;
 }
-export const validItem=item=>item&&['text','image','code'].includes(item.type)&&Number.isInteger(item.size)&&item.size>0&&item.size<=12&&Number.isInteger(item.value)&&item.value>0&&item.value<=2000&&validProfile(item.type,item.profile,item.size);
+export const validItem=item=>item&&['text','image','code','audio','video'].includes(item.type)&&Number.isInteger(item.size)&&item.size>0&&item.size<=12&&Number.isInteger(item.value)&&item.value>0&&item.value<=2000&&validProfile(item.type,item.profile,item.size);
 const copyItem=item=>({type:item.type,size:item.size,value:item.value,...(item.profile?{profile:item.profile}:{}),...(item.trial===true?{trial:true}:{})});
 function restoreJob(job){
   if(!validItem(job)||!Number.isFinite(job.duration)||job.duration<=0||job.duration>240||!Number.isFinite(job.remaining)||job.remaining<=0||job.remaining>job.duration)return null;
@@ -57,10 +57,11 @@ export function buildImageMuncher(state){
 }
 export function processingSummary(state){
   const items=[...state.base.queue,...[state.base.basic,state.base.image,state.base.extra].filter(Boolean)];
-  return {count:items.length,value:items.reduce((sum,item)=>sum+item.value,0),types:Object.fromEntries(['text','image','code'].map(type=>[type,items.filter(item=>item.type===type).length]))};
+  return {count:items.length,value:items.reduce((sum,item)=>sum+item.value,0),types:Object.fromEntries(['text','image','code','audio','video'].map(type=>[type,items.filter(item=>item.type===type).length]))};
 }
 export const picturesUnlocked=state=>state.knowledge.text>=PROCESSING.textKnowledgeGoal;
-export const feedAvailable=(state,type)=>type==='text'||(type==='image'?picturesUnlocked(state):codeAvailable(state));
+export const mediaUnlocked=state=>codeAvailable(state)&&state.story?.done.email===true;
+export const feedAvailable=(state,type)=>type==='text'||(type==='image'?picturesUnlocked(state):type==='code'?codeAvailable(state):['audio','video'].includes(type)&&mediaUnlocked(state));
 export const analyzerRate=state=>1+state.base.speedLevel*.5;
 export const analyzerSpeedCost=state=>Math.round(PROCESSING.analyzerSpeedCost*1.7**state.base.speedLevel);
 export function upgradeAnalyzer(state){

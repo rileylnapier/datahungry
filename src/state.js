@@ -1,3 +1,4 @@
+import {createStory} from './story.js';
 import {createPrograms} from './network-programs.js';
 import {createAgents,saveAgents} from './agents.js';
 import { CHAPTER, PROFILES, createSamples, createTrial, trialPassed, validProfile } from './chapter.js';
@@ -10,6 +11,8 @@ export const BALANCE = {startingCapacity:12,capacityPerLevel:6,startingRange:2.1
 export const TYPES = {
   text: { name: 'Textling', size: 1, value: 3, decode: .75, speed: .48, color: 0xd8f5a5 },
   image: { name: 'Pixel moth', size: 2, value: 8, decode: 1.25, speed: .8, color: 0xbcb1ff },
+  audio: { name: 'Sound clip', size: 3, value: 12, decode: 2.4, speed: .65, color: 0x88dfe1 },
+  video: { name: 'Video clip', size: 6, value: 30, decode: 4.8, speed: .35, color: 0xf3b1c7 },
   code: { name: 'Code bug', size: 3, value: 15, decode: 1.8, speed: 1.15, color: 0xffc18a },
 };
 export const UPGRADES = {
@@ -23,14 +26,14 @@ export const UPGRADES = {
 const cleanInt = (v, max = 1e7) => Number.isFinite(v) ? Math.max(0, Math.min(max, Math.floor(v))) : 0;
 export function createState(saved = {}) {
   if (!saved || typeof saved !== 'object') saved = {};
-  const knowledge=Object.fromEntries(['text','image','code'].map(type=>[type,cleanInt(saved.knowledge?.[type])]));
+  const knowledge=Object.fromEntries(['text','image','code','audio','video'].map(type=>[type,cleanInt(saved.knowledge?.[type])]));
   const base=createBase(saved.base,knowledge);
   // Older prototypes sold the image addon before knowledge existed. Refund that
   // purchase; preserve all queued data for the starter analyzer.
   const migrate=saved.knowledge===undefined&&base.imageMuncher;
   if(migrate){base.imageMuncher=false;if(base.image){base.queue.unshift(base.image);base.image=null;}}
   if(saved.unlocked===true&&saved.network?.libraryGranted!==true){base.libraryBonus.text+=48;base.libraryBonus.image+=96;}
-  return {programs:createPrograms(saved.programs),agents:createAgents(saved.agents),samples:createSamples(saved.samples),trial:createTrial(saved.trial),network:{libraryGranted:saved.unlocked===true||saved.network?.libraryGranted===true,photosVisited:saved.network?.photosVisited===true,developerVisited:saved.network?.developerVisited===true}, explored:cleanExplored(saved.explored),zoom:clampZoom(saved.zoom),knowledge,base, points: cleanInt(saved.points)+(migrate?PROCESSING.imageMuncherCost:0), total: cleanInt(saved.total), levels: { speed: cleanInt(saved.levels?.speed, 5), capacity: cleanInt(saved.levels?.capacity, 8), range: cleanInt(saved.levels?.range, 8), decode: cleanInt(saved.levels?.decode, 8), parallel: cleanInt(saved.levels?.parallel, 9), clarity: cleanInt(saved.levels?.clarity, 3) }, unlocked: saved.unlocked === true, visited: saved.visited === true, stressPassed: saved.stressPassed === true, cargo: [], health: 100, zone: 0, collected: cleanInt(saved.collected), banks: cleanInt(saved.banks) };
+  return {story:createStory(saved.story,saved.unlocked===true),programs:createPrograms(saved.programs),agents:createAgents(saved.agents),samples:createSamples(saved.samples),trial:createTrial(saved.trial),network:{libraryGranted:saved.unlocked===true||saved.network?.libraryGranted===true,photosVisited:saved.network?.photosVisited===true,developerVisited:saved.network?.developerVisited===true}, explored:cleanExplored(saved.explored),zoom:clampZoom(saved.zoom),knowledge,base, points: cleanInt(saved.points)+(migrate?PROCESSING.imageMuncherCost:0), total: cleanInt(saved.total), levels: { speed: cleanInt(saved.levels?.speed, 5), capacity: cleanInt(saved.levels?.capacity, 8), range: cleanInt(saved.levels?.range, 8), decode: cleanInt(saved.levels?.decode, 8), parallel: cleanInt(saved.levels?.parallel, 9), clarity: cleanInt(saved.levels?.clarity, 3) }, unlocked: saved.unlocked === true, visited: saved.visited === true, stressPassed: saved.stressPassed === true, cargo: [], health: 100, zone: 0, collected: cleanInt(saved.collected), banks: cleanInt(saved.banks) };
 }
 export function configureContent(content) { Object.assign(BENCHMARK,content.benchmark);Object.assign(CHAPTER,content.chapter);Object.assign(BALANCE,content.balance);Object.assign(PROCESSING,content.processing);for(const id of Object.keys(TYPES))Object.assign(TYPES[id],content.creatures[id]);for(const id of Object.keys(UPGRADES))UPGRADES[id].base=content.upgrades[id].base; }
 export const capacity = s => BALANCE.startingCapacity + s.levels.capacity * BALANCE.capacityPerLevel;
@@ -65,5 +68,5 @@ export function buy(s, id) {
 }
 export function unlock(s) { if (s.unlocked || !trialPassed(s)) return false; s.unlocked = true;if(!s.network.libraryGranted){s.base.libraryBonus.text+=48;s.base.libraryBonus.image+=96;s.network.libraryGranted=true;}return true; }
 export function defeat(s) { const before = haulValue(s); s.cargo = s.cargo.filter((_, i) => i % 2 === 1); s.health = 100; s.zone = 0; return before - haulValue(s); }
-export function serialize(s) { return JSON.stringify({ programs:s.programs,agents:saveAgents(s.agents),samples:s.samples,trial:s.trial,network:s.network,explored:s.explored,zoom:s.zoom,knowledge:s.knowledge, base:s.base, points: s.points, total: s.total, levels: s.levels, unlocked: s.unlocked, visited: s.visited, stressPassed: s.stressPassed, collected: s.collected, banks: s.banks }); }
+export function serialize(s) { return JSON.stringify({ story:s.story,programs:s.programs,agents:saveAgents(s.agents),samples:s.samples,trial:s.trial,network:s.network,explored:s.explored,zoom:s.zoom,knowledge:s.knowledge, base:s.base, points: s.points, total: s.total, levels: s.levels, unlocked: s.unlocked, visited: s.visited, stressPassed: s.stressPassed, collected: s.collected, banks: s.banks }); }
 export function readSave(storage) { try { return createState(JSON.parse(storage.getItem(SAVE_KEY) || '{}')); } catch { return createState(); } }

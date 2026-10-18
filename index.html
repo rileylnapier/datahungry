@@ -14,10 +14,10 @@
     <canvas id="world" aria-label="Data Hungry 3D world. Drag to steer, tap a destination, or use arrow keys and WASD." tabindex="0"></canvas>
     <header class="topbar">
       <a class="brand" href="./" aria-label="Data Hungry home"><span class="brand-mark">dh<span>•</span></span><span>DATA<br>HUNGRY</span></a>
-      <div class="top-actions"><span id="debug-badge" hidden>TEST SAVE</span><span class="prototype">PLAYABLE PROTOTYPE <i></i></span><button id="map" class="icon-button" aria-label="Open network map" title="Network map">⌖</button><button id="sound" class="icon-button" aria-label="Enable sound" title="Toggle sound">♪</button><button id="pause" class="icon-button" aria-label="Pause game" title="Pause">Ⅱ</button></div>
+      <div class="top-actions"><span id="debug-badge" hidden>TEST SAVE</span><span class="prototype">PLAYABLE PROTOTYPE <i></i></span><button id="assignments" class="icon-button" aria-label="Open assignments and Help Board" title="Assignments & Help Board">▤</button><button id="map" class="icon-button" aria-label="Open network map" title="Network map">⌖</button><button id="sound" class="icon-button" aria-label="Enable sound" title="Toggle sound">♪</button><button id="pause" class="icon-button" aria-label="Pause game" title="Pause">Ⅱ</button></div>
     </header>
     <section class="zone-info"><div class="eyebrow"><i></i><span id="zone-number">LOCAL COMPUTER · 01</span></div><h1 id="zone-title">Sandbox</h1><p id="zone-desc">A safe space inside your computer.</p></section>
-    <aside class="mission"><span class="eyebrow">YOUR NEXT LITTLE LEAP</span><div><span id="mission-icon">↗</span><p id="mission-text">Collect your first data</p></div><small id="mission-detail">Get close. Byte does the rest.</small></aside>
+    <aside class="mission"><span class="eyebrow">YOUR NEXT LITTLE LEAP</span><button id="mission-guide" aria-label="Go to current assignment"><div><span id="mission-icon">↗</span><p id="mission-text">Collect your first data</p></div><small id="mission-detail">Get close. Byte does the rest.</small></button></aside>
     <aside class="knowledge-hud" aria-label="Knowledge progress"><span id="knowledge-goal">UNLOCK IMAGES</span><strong id="knowledge-progress">Text knowledge 0/60</strong></aside>
     <div class="wallet"><span class="point-icon">✦</span><div><strong id="points">0</strong><span>POINTS</span></div></div>
     <aside id="health-hud" hidden aria-label="Byte health"><span>HEALTH <b id="health-value">100 / 100</b></span><div><i id="health-trail"></i><i id="health-fill"></i></div><small id="health-warning" aria-live="polite"> </small></aside>
@@ -25,13 +25,14 @@
     <div id="damage-edge" aria-hidden="true"></div>
     <div id="damage-popup" role="status" hidden><strong></strong><small></small></div>
     <div id="labels" aria-hidden="true"></div>
+    <button id="story-interact" hidden></button>
     <div id="toast" role="status" aria-live="polite"></div>
-    <aside class="legend"><span class="eyebrow">DATA YOU CAN COLLECT</span><div><i class="text-dot"></i> Text · .txt <span>1–3 KB</span></div><div id="image-legend" hidden><i class="image-dot"></i> Images <span>2–4 KB</span></div><div id="code-legend" hidden><i class="code-dot"></i> Code · .js <span>3 KB</span></div></aside>
+    <aside class="legend"><span class="eyebrow">DATA YOU CAN COLLECT</span><div><i class="text-dot"></i> Text · .txt <span>1–3 KB</span></div><div id="image-legend" hidden><i class="image-dot"></i> Images <span>2–4 KB</span></div><div id="code-legend" hidden><i class="code-dot"></i> Code · .js <span>3 KB</span></div><div id="audio-legend" hidden><i class="audio-dot"></i> Sound clips <span>3 KB</span></div><div id="video-legend" hidden><i class="video-dot"></i> Video clips <span>6 KB</span></div></aside>
     <aside class="byte-card"><span class="avatar">◉</span><div><span id="stage" class="eyebrow">STAGE 01 · PROTOTYPE</span><strong>Byte <span id="mood">is curious.</span></strong><div class="health-track" aria-label="Integrity"><i id="health"></i></div></div></aside>
     <section class="bottom-hud">
       <div class="context-head"><span>CONTEXT WINDOW</span><strong><span id="cargo">0</span> <span class="muted">/ <span id="capacity">12</span> KB</span></strong></div>
       <div class="context-track"><div id="context-fill"></div></div>
-      <div id="cargo-types" aria-label="Collected data"><span class="cargo-text">Text <b id="text-kb">0 KB</b></span><span class="cargo-image" hidden>Image <b id="image-kb">0 KB</b></span><span class="cargo-code" hidden>Code <b id="code-kb">0 KB</b></span><span class="cargo-noise" id="noise-summary" hidden></span></div>
+      <div id="cargo-types" aria-label="Collected data"><span class="cargo-text">Text <b id="text-kb">0 KB</b></span><span class="cargo-image" hidden>Image <b id="image-kb">0 KB</b></span><span class="cargo-code" hidden>Code <b id="code-kb">0 KB</b></span><span class="cargo-audio" hidden>Sound <b id="audio-kb">0 KB</b></span><span class="cargo-video" hidden>Video <b id="video-kb">0 KB</b></span><span class="cargo-noise" id="noise-summary" hidden></span></div>
       <div id="last-download" role="status" aria-live="polite">Move near a creature to download it.</div>
       <div class="context-foot"><span id="haul">A little room for big ideas.</span><button id="dock-guide" title="Guide Byte back to the server dock">⌂ <span>Return to dock</span> <span>↗</span></button></div>
       <button id="call-courier" class="base-status" hidden>Call courier · up to 24 KB</button>

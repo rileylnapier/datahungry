@@ -21,7 +21,7 @@ export function createDownloadCable(scene,labels){
   cable.update=(player,target,progress,time,phase,project,completion=0)=>{
     track.visible=fill.visible=head.visible=true;badge.hidden=false;
     progress=THREE.MathUtils.clamp(progress,0,1);
-    if(target){const data=TYPES[target.type];cable.caption=data?`${target.packetName?.toUpperCase()||{text:'TEXT',image:'IMAGE',code:'CODE'}[target.type]} · ${target.packetSize??data.size} KB`:'BENCHMARK';fill.material.color.setHex(data?.color??0xc8f99d);}
+    if(target){const data=TYPES[target.type];cable.caption=data?`${target.packetName?.toUpperCase()||{text:'TEXT',image:'IMAGE',code:'CODE',audio:'SOUND',video:'VIDEO'}[target.type]} · ${target.packetSize??data.size} KB`:'BENCHMARK';fill.material.color.setHex(data?.color??0xc8f99d);}
     if(target)for(let i=0;i<=SEGMENTS;i++){
       const t=i/SEGMENTS;
       points[i].set(player.x+(target.x-player.x)*t+Math.sin(t*Math.PI)*Math.sin(time*4+phase)*.25,(player.downloadHeight??.65)*(1-t)+.65*t+Math.sin(t*Math.PI)*.65,player.z+(target.z-player.z)*t);

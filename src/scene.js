@@ -1,3 +1,4 @@
+import {STORY_SITES,networkAccess,terminalEvent} from './story.js';
 import {networkWalls} from './network-layout.js';
 import {agentLoad,AGENT_CAPACITY} from './agents.js';
 import * as THREE from '../vendor/three/three.module.js';
@@ -11,7 +12,7 @@ import { createByteAnimator } from './byte-animation.js';
 import { createByteBlink } from './byte-blink.js';
 import { createByteCollectors } from './byte-collectors.js';
 import { createBrainAttachments } from './byte-attachments.js';
-import { range, level, connections } from './state.js';
+import { TYPES, range, level, connections } from './state.js';
 import { createWorldFog } from './world-fog.js';
 import { clampZoom } from './zoom.js';
 import { createDownloadCable } from './download-cable.js';
@@ -71,6 +72,29 @@ export function createScene(canvas, state, content, exploration) {
   const router=new THREE.Group();scene.add(router);router.position.set(NETWORK_ROUTER.x,0,NETWORK_ROUTER.z);
   box(router,0x506f7d,0,.5,0,3,1,1.8);for(const x of [-1,1]){cylinder(router,0x82cbd5,x,1.5,0,.07,1.6);ball(router,0xb8ffe0,x,2.3,0,.12,.12,.12,.5);}
   for(let i=0;i<5;i++)box(router,0xb8ffe0,-.8+i*.4,.5,.92,.12,.12,.03,.6);
+  // Small, readable interactable hardware. Kept off travel lanes.
+  const storyHardware={};
+  for(const id of ['terminal','infected','backup','relay']){
+    const p=STORY_SITES[id],g=new THREE.Group();g.position.set(p.x,0,p.z);scene.add(g);
+    box(g,0x273d43,0,.16,0,1.8,.3,1.4);
+    box(g,0xd7d0b4,0,.7,0,1.35,.9,.8);
+    box(g,0x102a30,0,1.4,-.12,1.5,1.05,.3);
+    const screen=box(g,p.color,0,1.4,.05,1.22,.78,.035,.4);
+    for(let i=0;i<3;i++)box(g,0x183c3b,-.15,1.6-i*.19,.08,.8-i*.18,.05,.02);
+    box(g,0x89ac9d,0,.6,.5,1.3,.08,.3);
+    const beacon=ball(g,p.color,.62,2,-.12,.1,.1,.1,.5);
+    const halo=torus(g,p.color,0,.12,0,1.12,.035,.35);
+    storyHardware[id]={g,screen,beacon,halo};
+  }
+  const mediaDisplay=new THREE.Group();mediaDisplay.position.set(-26,0,-86.2);scene.add(mediaDisplay);
+  box(mediaDisplay,0x263a43,0,1.5,0,3.4,2,.3);
+  const mediaScreen=box(mediaDisplay,0x472e3d,0,1.5,.17,3.05,1.65,.035,.1);
+  const movingFrame=ball(mediaDisplay,0xf3cf91,-.8,1.5,.23,.22,.22,.035,.3);
+  const speakerLights=[];
+  for(const side of [-1,1]){box(mediaDisplay,0x233d42,side*2,1.2,0,.5,1.6,.6);for(const y of [.8,1.5]){cylinder(mediaDisplay,0x71989a,side*2,y,.35,.18,.08);speakerLights.push(ball(mediaDisplay,0x88dfe1,side*2,y,.4,.12,.12,.025,.4));}}
+  // Firewall remains red; the allowed relay route lights independently.
+  const firewallStatus=box(router,0xef977d,0,1.13,.3,1.3,.12,.35,.45);
+  const relayTrace=box(scene,0x8de0d0,0,.1,-108,.1,.06,3,.5);
   // The starter habitat is a contained virtual sandbox on a computer board.
   const boardCenter=(safe.minZ+safe.maxZ)/2,boardDepth=safe.maxZ-safe.minZ+7;
   box(scene,0x24453f,0,-.18,boardCenter,safe.maxX-safe.minX+6,.3,boardDepth);
@@ -214,9 +238,9 @@ export function createScene(canvas, state, content, exploration) {
     for(let i=0;i<lengths.length;i++){if(distance<=lengths[i]||i===lengths.length-1){const ratio=Math.min(1,distance/lengths[i]);object.position.set(...points[i].map((v,j)=>v+(points[i+1][j]-v)*ratio));return;}distance-=lengths[i];}
   }
   function deliverData(items){
-    dockTransfer=1.8;dockColors=items.map(item=>BASE_STORAGE[item.type]?.color??0xf3b77f);
+    dockTransfer=1.8;dockColors=items.map(item=>TYPES[item.type]?.color??0xf3b77f);
     for(const [i,item] of items.slice(0,12).entries()){
-      const color=BASE_STORAGE[item.type]?.color??0xf3b77f;
+      const color=TYPES[item.type]?.color??0xf3b77f;
       const bit=box(scene,color,-3,.3,5,.18,.18,.18,.6);
       deliveries.push({bit,path:intake,age:-.5-i*.08,duration:.6});
     }
@@ -326,7 +350,7 @@ export function createScene(canvas, state, content, exploration) {
   function completeDownload(target){collectors.collect(target);byteAnimator?.collect();const cable=cables.find(c=>c.target===target);if(cable){cable.target=null;cable.completion=.24;}}
   const particles=[];
   const fragments=new Map();
-  for(const [type,glyph,color] of [['text','hello','#e6ffbc'],['image','▪','#d8c4ff'],['code','{ }','#ffd5ab']]){
+  for(const [type,glyph,color] of [['text','hello','#e6ffbc'],['image','▪','#d8c4ff'],['code','{ }','#ffd5ab'],['audio','~♪~','#88dfe1'],['video','▶','#f3b1c7']]){
     const canvas=document.createElement('canvas');canvas.width=128;canvas.height=64;const ctx=canvas.getContext('2d');ctx.font='bold 30px monospace';ctx.fillStyle=color;ctx.textAlign='center';ctx.fillText(glyph,64,42);const texture=new THREE.CanvasTexture(canvas);fragments.set(type,new THREE.SpriteMaterial({map:texture,transparent:true,depthWrite:false}));
   }
   const particleGeo=new THREE.BoxGeometry(.08,.08,.08);
@@ -346,7 +370,7 @@ export function createScene(canvas, state, content, exploration) {
   }
   function creature(type,hard=false,profile){
     const g=new THREE.Group(), model=new THREE.Group();g.add(model);scene.add(g);
-    const color=type==='text'?0xd8efa8:type==='image'?0xb9a5ef:0xf3b77f;
+    const color=TYPES[type].color;
     const wings=[];
     if(profile==='full_book'){
       // A chunky hardback, with page edges, binding and a hanging bookmark.
@@ -371,6 +395,17 @@ export function createScene(canvas, state, content, exploration) {
       for(let i=0;i<4;i++)box(model,0xdac8ff,-.19+i*.125,1.04,.12,.06,.045,.025,.35);
       for(const x of [-.09,.09])ball(model,0x283844,x,.36,.16,.025,.03,.02);
       for(const x of [-.32,.32])ball(model,0x554975,x,.18,0,.1,.1,.1);
+    }else if(type==='audio'){
+      // A swimming waveform, rather than another picture card.
+      for(let i=0;i<7;i++)box(model,color,(i-3)*.11,.48,0,.065,.15+Math.sin(i*.95)**2*.4,.1,.25);
+      ball(model,0x305c66,.4,.48,0,.15,.18,.13);
+    }else if(type==='video'){
+      // A compact moving filmstrip with frame holes and a play mark.
+      box(model,0x35414e,0,.52,0,.88,.62,.15);
+      box(model,color,0,.52,.09,.63,.45,.025,.2);
+      const play=mesh(model,new THREE.ConeGeometry(.13,.22,3),mat(0x334a51),.01,.53,.13);play.rotation.z=-Math.PI/2;play.scale.z=.1;
+      for(const side of [-1,1])for(let i=0;i<4;i++)box(model,0xe9d9d5,side*.38,.31+i*.14,.09,.05,.06,.025);
+      for(const x of [-.25,.25])ball(model,0x35414e,x,.18,0,.12,.12,.13);
     }else if(type==='text') {
       const page=box(model,color,0,.45,0,.43,.48,.1);page.rotation.z=-.12;
       for(let i=0;i<3;i++)box(model,0x81966a,-.02,.53-i*.09,.061,.24-i*.03,.025,.01);
@@ -432,8 +467,14 @@ export function createScene(canvas, state, content, exploration) {
       view.fill.scale.x=Math.max(.001,fill*3.6);view.fill.position.x=-1.8+fill*1.8;
       view.modules.forEach((module,i)=>module.visible=i<state.base.storageLevels[type]);
     }
-    storedBits.forEach((bit,i)=>{bit.visible=i<state.base.queue.length;const item=state.base.queue[i];if(item)bit.material=mat({text:0xd8efa8,image:0xb9a5ef,code:0xf3b77f}[item.type]);});
-    deviceLights.developer.material=mat(state.base.photoSorter?0xf3b77f:0x53696b,.4);
+    storedBits.forEach((bit,i)=>{bit.visible=i<state.base.queue.length;const item=state.base.queue[i];if(item)bit.material=mat(TYPES[item.type].color);});
+    deviceLights.developer.material=mat(networkAccess(state)?0xf3b77f:0x53696b,.4);
+    for(const [id,v] of Object.entries(storyHardware)){const done=id==='relay'?state.story.done.complete:state.story.done[id],ready=id==='terminal'?!!terminalEvent(state):!done;v.beacon.material=mat(done?0x9fe0c3:STORY_SITES[id].color,ready?.7:.2);v.halo.visible=ready;v.halo.rotation.z=time*.2;}
+    relayTrace.visible=state.story.done.bridge;
+    mediaScreen.material=mat(state.story.done.backup?0x8ebfb4:state.story.done.infected?0x36515c:0x472e3d,.25);
+    movingFrame.visible=state.story.done.backup;movingFrame.position.x=Math.sin(time)*1.1;
+    for(const light of speakerLights){light.visible=state.story.done.infected;light.scale.setScalar(.8+Math.sin(time*4)*.15);}
+    firewallStatus.material=mat(state.story.done.firewall?0xef977d:0x8cb1ad,.4);
     for(const [id,m] of Object.entries(munchers)){
       const installed=id==='basic'||(id==='image'?state.base.imageMuncher:state.base.autoSort),job=state.base[id],progress=job?1-job.remaining/job.duration:0;
       m.machine.visible=installed;m.placeholder.visible=!installed&&(id==='image'?picturesUnlocked(state):state.base.photoSorter);
@@ -444,12 +485,12 @@ export function createScene(canvas, state, content, exploration) {
       }
       const travel=Math.min(1,progress*3);
       m.transfer.visible=installed&&!!job&&travel<1;
-      if(job)m.transfer.material=mat({text:0xd8efa8,image:0xb9a5ef,code:0xf3b77f}[job.type],.4);
+      if(job)m.transfer.material=mat(TYPES[job.type].color,.4);
       followRoute(m.transfer,m.path,travel);
       m.jaw.position.y=.67+(job?Math.sin(progress*35)*.055:0);
       m.snack.visible=installed&&!!job;m.snack.position.z=1.3-(progress*3%1)*.65;
       m.snack.rotation.z=job?Math.sin(progress*20)*.2:0;
-      if(job)m.snack.material=mat({text:0xd8efa8,image:0xb9a5ef,code:0xf3b77f}[job.type],.35);
+      if(job)m.snack.material=mat(TYPES[job.type].color,.35);
       m.progress.scale.x=Math.max(.001,progress*1.2);m.progress.position.x=-.6+progress*.6;
     }
     for(const e of emitterRings.values()){e.remaining=Math.max(0,e.remaining-dt);const t=1-e.remaining/.45;e.pulse.visible=e.remaining>0;e.pulse.position.z=.76+t*.9;e.pulse.scale.setScalar(1+t*.5);e.lip.visible=feedAvailable(state,e.type);}
@@ -478,7 +519,7 @@ export function createScene(canvas, state, content, exploration) {
     const desired=new THREE.Vector3(player.x,0,player.z-1.3);focus.lerp(desired,1-Math.exp(-dt*3));camera.position.copy(focus).add(new THREE.Vector3(...CAMERA_OFFSET));camera.lookAt(focus);
     radiusRing.position.set(player.x,indicatorHeight,player.z);radiusRing.scale.setScalar(range(state));
     targetRing.visible=!!destination;if(destination)targetRing.position.set(destination.x,indicatorHeight,destination.z);
-    barrier.visible=!state.unlocked;bars.forEach(b=>b.visible=!state.unlocked);
+    barrier.visible=!networkAccess(state);bars.forEach(b=>b.visible=!networkAccess(state));
     for(const cable of cables)if(cable.target&&!targets.includes(cable.target))cable.target=null;
     for(const target of targets){if(!cables.some(c=>c.target===target)){const available=cables.find(c=>!c.target&&c.completion<=0);if(available)available.target=target;}}
     const docking=atHomeDock(player)&&speed<.6;

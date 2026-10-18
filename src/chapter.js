@@ -10,16 +10,16 @@ export const sandboxReady=s=>s.knowledge.text>=CHAPTER.sandboxText&&s.knowledge.
 export const trialPassed=s=>s.trial.legacyPassed===true||(s.trial.version===BENCHMARK.id&&s.trial.started&&benchmarkScore(s.trial).passed);
 export function startTrial(s){if(s.unlocked||trialPassed(s)||(!s.trial.started&&!sandboxReady(s))||(s.trial.started&&!benchmarkScore(s.trial).complete))return false;s.trial=newBenchmark(s.trial.best);return true;}
 export const photoReady=s=>s.unlocked&&s.base.imageMuncher&&s.samples.cat>=CHAPTER.photoGoal&&s.samples.dog>=CHAPTER.photoGoal;
-export const autoSortReady=s=>s.base.photoSorter&&s.network.developerVisited&&s.samples.routing>=CHAPTER.codeGoal;
+export const autoSortReady=s=>s.unlocked&&s.network.developerVisited&&s.samples.routing>=CHAPTER.codeGoal;
 export function buildProgram(s,id){
   if(!['photoSorter','autoSort'].includes(id)||s.base[id])return false;
   const ready=id==='photoSorter'?photoReady(s):autoSortReady(s),price=id==='photoSorter'?CHAPTER.photoCost:CHAPTER.autoSortCost;
   if(!ready||s.points<price)return false;
   s.points-=price;s.base[id]=true;return true;
 }
-export const codeAvailable=s=>s.unlocked&&s.base.photoSorter&&s.network.developerVisited;
+export const codeAvailable=s=>s.unlocked&&(s.story?.done.guest??true);
 export function visitDevice(s,id){
   if(!s.unlocked)return false;
-  const key=id==='photos'?'photosVisited':id==='developer'&&s.base.photoSorter?'developerVisited':null;
+  const key=id==='photos'?'photosVisited':id==='developer'?'developerVisited':null;
   if(!key||s.network[key])return false;s.network[key]=true;return true;
 }

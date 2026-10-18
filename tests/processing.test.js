@@ -218,3 +218,14 @@ test('paragraph-only sandbox runs can always buy enough storage to unlock pictur
   assert.equal(picturesUnlocked(s),true);assert.equal(s.knowledge.text,60);
   assert.ok(s.base.storageLevels.text>3);assert.equal(storageUsed(s,'text'),180);
 });
+
+test('media feeds unlock with the email; queued clips survive reload and teach through full libraries',()=>{
+  let s=createState({unlocked:true,base:{libraryUsed:{text:24,image:24}}});
+  assert.equal(feedAvailable(s,'audio'),false);assert.equal(feedAvailable(s,'video'),false);
+  s.story.done.email=true;assert.equal(feedAvailable(s,'audio'),true);assert.equal(feedAvailable(s,'video'),true);
+  assert.equal(feedAvailable(s,'unknown'),false);
+  collect(s,'audio');collect(s,'video');bank(s);processBase(s,1);s=readSave({getItem:()=>serialize(s)});
+  assert.equal(processingSummary(s).types.audio,1);assert.equal(processingSummary(s).types.video,1);
+  assert.equal(processBase(s,100),42);assert.equal(s.knowledge.audio,1);assert.equal(s.knowledge.video,1);assert.equal(processBase(s,100),0);
+  assert.equal(createState().knowledge.audio,0);
+});

@@ -9,15 +9,12 @@ import {buyProgram} from '../src/network-programs.js';
 import {NETWORK_DEVICES,solidObstacles,worldLayout} from '../src/world-layout.js';
 import {planPath,overlapsCircle} from '../src/collision.js';
 import starter from '../src/starter-content.js';
-test('code guide explains each prerequisite and points to a useful next destination',()=>{
+test('code is available on network entry without Photo Sorter or cat/dog quotas',()=>{
   assert.equal(codeGuide(debugPreset('sandbox')),null);
-  const s=debugPreset('network');assert.match(codeGuide(s).title,/locked/);
-  assert.deepEqual(codeGuide(s).destination,deviceApproach('photos'));
-  assert.equal(visitDevice(s,'developer'),false);assert.equal(codeAvailable(s),false);
-  s.samples.cat=6;s.samples.dog=6;assert.deepEqual(codeGuide(s).destination,{x:-3,z:5});
-  assert.equal(buildProgram(s,'photoSorter'),true);
-  assert.deepEqual(codeGuide(s).destination,deviceApproach('developer'));assert.match(codeGuide(s).title,/ready/);
-  assert.equal(visitDevice(s,'developer'),true);assert.equal(codeAvailable(s),true);
+  const s=debugPreset('network');assert.match(codeGuide(s).title,/Safe code/);
+  assert.deepEqual(codeGuide(s).destination,deviceApproach('developer'));
+  assert.equal(s.base.photoSorter,false);assert.equal(s.samples.cat,0);
+  assert.equal(codeAvailable(s),true);assert.equal(visitDevice(s,'developer'),true);
   assert.match(codeGuide(s).detail,/Starter Analyzer/);
   for(let i=0;i<6;i++)assert.equal(collect(s,'code',false,3,'routing'),true);
   bank(s);processBase(s,100);assert.equal(s.knowledge.code,6);

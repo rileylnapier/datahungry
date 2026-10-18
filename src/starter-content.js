@@ -1,7 +1,7 @@
 // Generated from content/local-manifest.json by scripts/build.mjs.
 export default {
   "schemaVersion": 1,
-  "contentVersion": 16,
+  "contentVersion": 18,
   "minimumAppVersion": "0.1.0",
   "channel": "development",
   "disabled": false,
@@ -39,6 +39,20 @@ export default {
       "value": 15,
       "decode": 1.8,
       "speed": 1.15
+    },
+    "audio": {
+      "behavior": "wander",
+      "size": 3,
+      "value": 12,
+      "decode": 2.4,
+      "speed": 0.65
+    },
+    "video": {
+      "behavior": "wander",
+      "size": 6,
+      "value": 30,
+      "decode": 4.8,
+      "speed": 0.35
     }
   },
   "upgrades": {
@@ -179,7 +193,7 @@ export default {
     {
       "id": "local_network",
       "zone": 1,
-      "name": "Local Network",
+      "name": "Shared Network",
       "bounds": {
         "minX": -36,
         "maxX": 36,
@@ -340,6 +354,28 @@ export default {
             "maxZ": -53
           },
           "profile": "full_book"
+        },
+        {
+          "creature": "audio",
+          "count": 4,
+          "packetSize": 3,
+          "habitat": {
+            "minX": -29,
+            "maxX": -18,
+            "minZ": -53,
+            "maxZ": -47
+          }
+        },
+        {
+          "creature": "video",
+          "count": 4,
+          "packetSize": 6,
+          "habitat": {
+            "minX": 18,
+            "maxX": 30,
+            "minZ": -81,
+            "maxZ": -71
+          }
         }
       ],
       "hostiles": [
@@ -361,6 +397,16 @@ export default {
             "maxX": 9,
             "minZ": -108,
             "maxZ": -98
+          }
+        },
+        {
+          "enemy": "malware",
+          "count": 1,
+          "habitat": {
+            "minX": -2.6,
+            "maxX": 2.6,
+            "minZ": -61,
+            "maxZ": -54
           }
         }
       ],
@@ -395,7 +441,7 @@ export default {
         },
         {
           "id": "documents",
-          "name": "Shared Documents",
+          "name": "Shared Inbox",
           "bounds": {
             "minX": 15,
             "maxX": 33,
@@ -431,7 +477,7 @@ export default {
         },
         {
           "id": "infected",
-          "name": "Infected Computer",
+          "name": "Infected Media Server",
           "bounds": {
             "minX": -33,
             "maxX": -15,
@@ -451,6 +497,18 @@ export default {
             "maxZ": -95
           },
           "color": "#e3a273",
+          "safe": false
+        },
+        {
+          "id": "quarantine",
+          "name": "Quarantine Crossing",
+          "bounds": {
+            "minX": -4,
+            "maxX": 4,
+            "minZ": -62,
+            "maxZ": -53
+          },
+          "color": "#ef8b91",
           "safe": false
         }
       ],

@@ -1,3 +1,4 @@
+import {STORY_SITES} from './story.js';
 import {networkWalls} from './network-layout.js';
 // All gameplay boundaries derive from the same content used to build the map.
 export function worldLayout(content){
@@ -10,7 +11,7 @@ export function routeThroughGate(start,goal,gateZ){
   return [{x:0,z:gateZ+side*2},{x:0,z:gateZ-side*2},goal];
 }
 export const NETWORK_ROUTER={x:5.5,z:-40,width:3,depth:1.8};
-export const NETWORK_DEVICES={photos:{name:'Photo Library',x:-24,z:-42,color:0xb9a5ef},documents:{name:'Shared Documents',x:24,z:-42,color:0xd8efa8},developer:{name:'Developer Workstation',x:-6,z:-68,color:0xf3b77f}};
+export const NETWORK_DEVICES={photos:{name:'Photo Library',x:-24,z:-42,color:0xb9a5ef},documents:{name:'Shared Inbox',x:24,z:-42,color:0xd8efa8},developer:{name:'Developer Workstation',x:-6,z:-68,color:0xf3b77f}};
 export const BASE_STORAGE={text:{x:-8,z:12.5,color:0xd8efa8},image:{x:2,z:12.5,color:0xb9a5ef}};
 export const FOLDERS=Object.values(BASE_STORAGE).map(s=>[s.x,s.z,s.color]);
 export const MEMORY_MODULES=[[-15,-10],[15,-21]];
@@ -22,6 +23,8 @@ export const BASE_MACHINES={basic:{x:-8,z:9},image:{x:2,z:9},extra:{x:-13,z:9}};
 export function solidObstacles(content,base={}){
   const layout=worldLayout(content),result=networkWalls(content);
   const add=(x,z,width,depth)=>result.push({minX:x-width/2,maxX:x+width/2,minZ:z-depth/2,maxZ:z+depth/2});
+  for(const id of ['terminal','infected','backup','relay']){const p=STORY_SITES[id];add(p.x,p.z,1.8,1.4);}
+  add(-26,-86.2,4.5,.8);
   add(NETWORK_ROUTER.x,NETWORK_ROUTER.z,NETWORK_ROUTER.width,NETWORK_ROUTER.depth);
   for(const p of DOCK_PILLARS)add(p.x,p.z,p.width,p.depth);
   for(const pos of Object.values(NETWORK_DEVICES))add(pos.x,pos.z,4,3);

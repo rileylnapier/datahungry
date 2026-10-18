@@ -1,3 +1,4 @@
+import {feedAvailable} from './processing.js';
 import {validItem} from './processing.js';
 import {planPath,moveWithCollisions} from './collision.js';
 import {routeThroughGate} from './world-layout.js';
@@ -81,7 +82,7 @@ export function createAgentSystem(state,{content,layout,obstacles,creatures,pack
     const a=state.agents.harvester,r=runtimes.harvester,room=content.areas[1].districts.find(d=>d.id===a.assignment&&d.safe);
     if(a.mode==='return'||!room){release();if(a.cargo.length)deliver('harvester',dt);else {a.mode='idle';a.status='Choose a safe room';move('harvester',parking.harvester,dt);}return;}
     a.mode='harvest';a.status=`Harvesting · ${room.name}`;
-    const available=c=>c.wait<=0&&!c.mimic&&!c.malware&&!c.progress&&c.zone===1&&!c.corrupt&&districtAt(content,c.x,c.z)?.id===room.id&&agentLoad(a)+packetStats(c.type,c.packetSize,c.profile).size<=AGENT_CAPACITY.harvester&&(c.type!=='code'||state.network.developerVisited);
+    const available=c=>feedAvailable(state,c.type)&&c.wait<=0&&!c.mimic&&!c.malware&&!c.progress&&c.zone===1&&!c.corrupt&&districtAt(content,c.x,c.z)?.id===room.id&&agentLoad(a)+packetStats(c.type,c.packetSize,c.profile).size<=AGENT_CAPACITY.harvester&&(c.type!=='code'||state.network.developerVisited);
     if(r.target&&!available(r.target))release();
     if(!r.target){r.target=creatures.filter(available).sort((c,d)=>Math.hypot(c.x-a.x,c.z-a.z)-Math.hypot(d.x-a.x,d.z-a.z))[0];r.progress=0;}
     if(!r.target){

@@ -71,7 +71,7 @@ Play
   Until then, image and code feeds stay dormant. Build the Image Analyzer for
   80 points to process stored pictures at 0.5 seconds per KB, alongside text.
   The Starter Analyzer processes pictures even before the specialist is built. Code feeds are
-  activated after building Photo Sorter and visiting the Developer Workstation; existing code queues still process safely.
+  available as soon as the guest key opens the shared network; existing code queues still process safely.
   Processing continues in home/map menus, pauses with Pause or a hidden/closed
   game, and saves unfinished jobs. There is no offline catch-up in this prototype.
   Older saves retain Byte upgrades, points and queued data; a previously purchased
@@ -96,7 +96,7 @@ Play
   four paragraphs. Pass with 10/12 overall and 3/4 in each category. Pictures get
   6 seconds, words 8, paragraphs 14. Missed deadlines count as mistakes; retries
   are free. Progress saves and the trial pauses when the page is hidden.
-  Claiming the reward equips a travel vat and opens the Local Network for free.
+  Claiming the reward equips a travel vat. A separate guest key from PATCH opens the shared network.
   Previously unlocked saves keep their vat and access.
   Deeper in Sandbox, a thick Full Book and framed 4K Image each carry 12 KB.
   The Full Book wanders in a small northern clearing west of the gateway,
@@ -104,23 +104,22 @@ Play
   Their base downloads take 45/60 seconds and pay 120/160 processing points;
   decoding upgrades shorten that time. Each retained file teaches one example,
   like other data. They respawn after 45/55 seconds; 4K appears after images unlock.
-  Local Network now branches across seven rooms: Router Hub, Family Photo Library,
-  Shared Documents, Developer Workstation, Photo Archive, Infected Computer and
-  Corrupted Backup. Rooms and corridors are defined in the local manifest; the
+  Shared Network now branches across eight districts: Router Hub, Family Photo Library,
+  Shared Inbox, Developer Workstation, Photo Archive, Infected Media Server,
+  Corrupted Backup and Quarantine Crossing. Rooms and corridors are defined in the local manifest; the
   rendered walls and collision obstacles come from the same geometry. The central
   path stays clear of the router and laptop, including at maximum vat size.
-  The first rooms are safe; malware stays within the two marked danger rooms.
+  The first rooms are safe. One early malware patrol stays in Quarantine Crossing;
+  further malware stays inside the marked server and backup rooms. Retreat to safe rooms.
   Regular cat/dog photos are 6 KB, archive photos 8 KB, articles/scripts 6 KB.
   The archive also holds a 12 KB 4K image; documents include a full book.
   Earning the vat grants an extra 48 KB text / 96 KB image library space once,
   including for existing vat saves. This leaves room for the first network goals.
   There is no boss or hallucination minigame in this chapter.
-  Learn 6 cats and 6 dogs, then build Photo Sorter at home for 60 points.
-  New image jobs run twice as fast. Visit the laptop to activate routing snippets.
-  The map and Network workshop show a code-source guide: first find cat/dog photos,
-  then build Photo Sorter, then Go to code source. Device destinations stop within
-  activation range of the laptop, not at the center of its room. Code stays hidden
-  until the workstation is connected; the Starter Analyzer handles code for free.
+  Photo Sorter is optional: learn 6 cats and 6 dogs and pay 60 points to double
+  image processing speed. It does not gate code, agents, or the story. The map and
+  Network workshop guide directly to safe code at the Developer Workstation.
+  Code is available on network entry; the Starter Analyzer handles it for free.
   Learn 8 routing snippets, then build Auto Sort for 80 points: a second text/code
   worker appears at home. Both handlers are fixed recipes, not generated code.
   Ordinary code knowledge does not count as routing samples. Samples are learned
@@ -254,3 +253,32 @@ Local performance logging
 
   Brain hose roots bind to crown surface triangles and follow brain movement,
   tilt and deformation. Vat hoses remain mounted to the hardware ring.
+
+STORY CHAPTER: A LITTLE BIT READY
+  Opening: Developer teaches text, then pictures, then Data Trials. After the vat,
+  the developer mentions learning sound/video and eventually helping with the
+  computer. Byte starts early, posts to the Help Board, and accepts PATCH's guest key.
+  Shared Inbox: read the unread email about a broken media server. This unlocks
+  3 KB cyan waveform creatures at Family Photo Library and 6 KB pink film creatures
+  at Photo Archive. Learn 3 sound and 3 video examples by dropping clips at home.
+  Media clips use normal context capacity, queues, saved jobs, processing time and
+  points. For this first media lesson, the starter streams audio/video/code directly
+  into knowledge; they do not occupy the text/image libraries or need new storage.
+  Read the media report, then the workstation maintenance node. Build the shield
+  (8 code knowledge / 100 points), repair sound on the Infected Media Server, build
+  the cleaner (16 code / 180 points), and restore the video index from the backup.
+  Repairs light the server's speakers and animate its screen. Story components are
+  permanent and independent of carried data, defeat, or library space.
+  The missing decoder lives outside. Check the firewall, assemble the Web Bridge
+  at home at no extra cost, then connect the northern relay. The firewall remains
+  active; the relay is the allowed outside route. Open Web is a future chapter.
+  Navigation: tap the current HUD assignment, or open the assignment-log button.
+  Approach terminals and use the on-screen interaction button or E. Dialogue can
+  be closed anytime and resumes at its saved line. Completed conversations remain
+  in the log. Base processing continues through conversations; Pause stops it.
+  Authoring: src/story-dialogue.js contains dialogue only. src/story.js owns gates,
+  destinations and save migration. Change dialogue wording without changing IDs.
+  Story version 2 replaces the early missing-dog preview, retaining the guest key,
+  hardware, money, knowledge and queues. Existing pre-story vat saves keep access.
+  Debug tools include After Data Trials (meet PATCH), Start Local Network (read the
+  email), and Server repaired (assemble and test the Web Bridge), all on test saves.

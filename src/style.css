@@ -128,3 +128,10 @@
 #app[data-network=true] .zone-info h1{max-width:450px;font-size:32px;letter-spacing:-1px}
 @media(max-width:600px){#debug-badge{font-size:9px;padding:4px}#app[data-network=true] .zone-info h1{max-width:230px;font-size:22px}.zone-info p{max-width:215px}#health-hud{right:18px;top:151px;width:115px;font-size:10px;padding:7px}.byte-card{display:none}#call-courier{font-size:12px}}
 @media(max-height:630px){#health-hud{right:22px;top:150px;width:130px}}
+
+/* Damage is legible without sound or color alone; no camera shake or strobing. */
+#damage-edge{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;box-shadow:inset 0 0 95px 28px #e94b60;background:radial-gradient(ellipse at center,transparent 48%,#c72f4838 100%)}
+#damage-popup{position:absolute;z-index:5;pointer-events:none;transform:translate(-50%,-100%);text-align:center;white-space:nowrap;padding:9px 13px;border:1px solid #ff8c99;border-radius:12px;background:#431c2beF;box-shadow:0 4px 18px #100a1880;color:#fff2ed}#damage-popup strong{font-size:25px;font-weight:850;display:block}#damage-popup small{display:block;font-size:11px;font-weight:750;letter-spacing:1px;margin-top:4px;color:#ffb8bd}
+#health-hud>div{position:relative}#health-trail{position:absolute;inset:0;display:block;background:#ffce8e;transition:width .55s ease .18s}#health-fill{position:relative}#health-warning{display:block;font-size:10px;line-height:1.3;min-height:13px;margin-top:6px;font-weight:750;color:#ffb1b8}#health-hud.taking-damage,#health-hud.critical-health{border-color:#ff8292;background:#421f2ded}#health-hud.taking-damage #health-fill,#health-hud.critical-health #health-fill{background:#ff7587}
+@media(max-width:600px){#damage-popup strong{font-size:22px}#damage-popup small{font-size:10px}#health-warning{font-size:9px}#damage-edge{box-shadow:inset 0 0 55px 12px #e94b60}}
+@media(prefers-reduced-motion:reduce){#health-trail,#health-fill{transition:none}}

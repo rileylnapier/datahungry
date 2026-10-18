@@ -317,6 +317,8 @@ export function createScene(canvas, state, content, exploration) {
   const extras=new THREE.Group();body.add(extras);
   // Keep ground indicators above the raised board panels, paths and circuit traces.
   const indicatorHeight=.22;
+  const damageRing=mesh(scene,new THREE.RingGeometry(.94,1,48),new THREE.MeshBasicMaterial({color:0xff5b67,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));damageRing.rotation.x=-Math.PI/2;damageRing.visible=false;
+  const reduceHitMotion=matchMedia('(prefers-reduced-motion: reduce)');
   const radiusRing=mesh(scene,new THREE.RingGeometry(1,1.022,80),new THREE.MeshBasicMaterial({color:0xc8edbb,transparent:true,opacity:.28,depthWrite:false,side:THREE.DoubleSide}));radiusRing.rotation.x=-Math.PI/2;
   const targetRing=mesh(scene,new THREE.RingGeometry(.17,.22,32),new THREE.MeshBasicMaterial({color:0xd2f8b7,transparent:true,opacity:.7,depthWrite:false,side:THREE.DoubleSide}));targetRing.rotation.x=-Math.PI/2;targetRing.visible=false;
   // Ten live downloads plus room for their completion flashes.
@@ -469,7 +471,10 @@ export function createScene(canvas, state, content, exploration) {
     brain.position.y=(state.unlocked?VAT_BRAIN_HEIGHT:.48)+(byteAnimator?0:Math.sin(time*2)*.045+Math.sin(time*13+.7)*moving*.04);
     brain.rotation.z=-body.rotation.z*.6;brain.rotation.x=-body.rotation.x*.5;
 
-    if(player.hurt>0)body.rotation.z=Math.sin(time*50)*.12;
+    const hitAge=1.2-player.hurt,hitStrength=player.hurt>0?Math.max(0,1-hitAge/.45):0;
+    damageRing.visible=hitStrength>0;damageRing.position.set(player.x,indicatorHeight+.02,player.z);
+    damageRing.scale.setScalar((state.unlocked?1.6:.9)+(reduceHitMotion.matches?0:hitAge*2));damageRing.material.opacity=hitStrength*.85;
+    if(hitStrength>0&&!reduceHitMotion.matches){body.rotation.z+=Math.sin(hitAge*25)*.24*hitStrength;body.position.y+=Math.sin(hitAge*12)*.1*hitStrength;}
     const desired=new THREE.Vector3(player.x,0,player.z-1.3);focus.lerp(desired,1-Math.exp(-dt*3));camera.position.copy(focus).add(new THREE.Vector3(...CAMERA_OFFSET));camera.lookAt(focus);
     radiusRing.position.set(player.x,indicatorHeight,player.z);radiusRing.scale.setScalar(range(state));
     targetRing.visible=!!destination;if(destination)targetRing.position.set(destination.x,indicatorHeight,destination.z);

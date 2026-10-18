@@ -1,3 +1,4 @@
+import {createDamageFeedback} from './damage-feedback.js';
 import {codeGuide,deviceApproach} from './code-guide.js';
 import {PROGRAMS,buyProgram,programRequirements,malwareDamage,cleanPacket} from './network-programs.js';
 import {createAgentSystem,requestCourier,assignCollector,agentLoad,AGENT_CAPACITY} from './agents.js';
@@ -37,6 +38,7 @@ let exploredDirty=false,explorationSaveTime=0,revealX=0,revealZ=3,revealRange=0;
 let world;
 try { world=createScene($('world'),state,content,exploration); } catch(error) { $('boot-error').hidden=false; throw error; }
 const {THREE}=world;
+const damageFeedback=createDamageFeedback({edge:$('damage-edge'),popup:$('damage-popup'),hud:$('health-hud'),status:$('health-warning'),project:p=>world.project(new THREE.Vector3(p.x,3.1,p.z))});
 const player={x:0,z:debugActive&&state.unlocked?-44:3,vx:0,vz:0,hurt:0,munch:0};
 const creatures=[],enemies=[],emitters=[];
 let time=0,last=0,uiTime=0,paused=false,panel=null,destination=null,returning=false,gateCooldown=0;
@@ -44,7 +46,7 @@ let route=[],dockTab='base',processingSaveTime=0,benchmarkView=null;
 document.addEventListener('visibilitychange',()=>{last=0;});
 const dataNames={text:'Text',image:'Image',code:'Code'};
 const perf=createPerformanceMonitor(world.renderer,()=>({zone:content.areas[state.zone].name,collectors:connections(state),queue:processingSummary(state).count,creatures:creatures.filter(c=>c.wait<=0&&c.view.group.visible).length,panel:panel||'playing',zoom:world.getZoom()}),enabled=>{const button=$('performance-toggle');if(button)button.textContent=`${enabled?'Hide':'Show'} performance monitor`;});
-let pictureMilestoneSeen=picturesUnlocked(state);
+let pictureMilestoneSeen=picturesUnlocked(state),lastLearningWarning=-Infinity;
 function callCourier(){if(requestCourier(state)){save();toast('Courier called! Keep exploring; it will meet you.');updateUI();}}
 $('call-courier').onclick=callCourier;
 function captureSpecimen(c,t){
@@ -215,7 +217,7 @@ function chapterShop(){
     if(state.trial.started){const score=benchmarkScore(state.trial);return card('Data Trials · Cats & dogs',score.complete?`Last score: ${score.correct}/12. Practice pictures, words and paragraphs. Free retries.`:`${state.trial.answers.length}/12 sorted. Your answers are saved. Swipe left for cats, right for dogs.`,'trial',score.complete?'Retry Data Trials · Free':'Resume Data Trials',true);}
     return card('Earn your travel vat',`Text knowledge ${goalProgress(state.knowledge.text,CHAPTER.sandboxText)} · Image knowledge ${goalProgress(state.knowledge.image,CHAPTER.sandboxImages)}. Then swipe cat/dog pictures, words and paragraphs. Pass ${BENCHMARK.passScore}/12, with ${BENCHMARK.minimumPerKind}/4 in each category.`,'trial','Start Data Trials',sandboxReady(state));
   }
-  if(!state.base.photoSorter)return card('Vibe Lab · Photo Sorter',`Cats ${goalProgress(state.samples.cat,CHAPTER.photoGoal)} · Dogs ${goalProgress(state.samples.dog,CHAPTER.photoGoal)} analyzed and saved. ${!state.base.imageMuncher?'Build the Image Analyzer first. ':''}Collect 6 KB photos at the Photo Library; leave library space to save them. Install a Photo Sorter on your Image Analyzer to make new image jobs 2× faster and open the Developer Workstation.`,'photoSorter',photoReady(state)?`Build Photo Sorter · ${CHAPTER.photoCost} ✦`:'Learn cats & dogs to unlock',photoReady(state)&&state.points>=CHAPTER.photoCost);
+  if(!state.base.photoSorter)return card('Photo Sorter · Install on Image Analyzer',`Cats ${goalProgress(state.samples.cat,CHAPTER.photoGoal)} · Dogs ${goalProgress(state.samples.dog,CHAPTER.photoGoal)} analyzed and saved. ${!photoReady(state)&&storageCapacity(state,'image')-storageUsed(state,'image')<6?'IMAGE LIBRARY TOO FULL: new photos earn points but will not teach cats or dogs. Expand image storage, then collect more photos. ':''}${!state.base.imageMuncher?'Build the Image Analyzer first. ':''}Collect 6 KB photos at the Photo Library; leave library space to save them. ${state.points<CHAPTER.photoCost?`Need ${CHAPTER.photoCost-state.points} more points. `:''}Install on the Image Analyzer: pictures process 2× faster and the Developer Workstation unlocks code.`,'photoSorter',`Install Photo Sorter · ${CHAPTER.photoCost} ✦`,photoReady(state)&&state.points>=CHAPTER.photoCost);
   if(!state.base.autoSort)return card('Vibe Lab · Auto Sort',`Developer Workstation ${state.network.developerVisited?'✓':'not visited'} · Routing ${goalProgress(state.samples.routing,CHAPTER.codeGoal)}. Build a second worker for text and code. Photo Sorter is already speeding up images.`,'autoSort',`Build Auto Sort · ${CHAPTER.autoSortCost} ✦`,autoSortReady(state)&&state.points>=CHAPTER.autoSortCost);
   return card('Your network workshop','Use code knowledge to build protection and agents. Explore the Photo Archive, Infected Computer and Corrupted Backup.');
 }
@@ -228,18 +230,18 @@ function networkShop(){
   return `<details class="network-workshop" open><summary>Network workshop · protection & agents</summary>${codeGuideCard()}<p>Each helper carries real files home; your analyzers turn them into points and knowledge.</p>${programs}${state.programs.courier?'<p id="courier-status"></p><button id="call-courier-home" class="restart-button">Call courier for pickup</button>':''}${state.programs.harvester?`<p id="harvester-status"></p><strong>Collector assignment</strong><div class="map-destinations">${rooms.map(d=>{const c=districtCenter(d),known=exploration.known(c.x,c.z);return `<button data-assignment="${d.id}" ${known?'':'disabled'} aria-pressed="${state.agents.harvester.assignment===d.id}">${known?d.name:'Explore to discover'}${state.agents.harvester.assignment===d.id?' ✓':''}</button>`;}).join('')}<button data-assignment="">Stop & bring data home</button></div>`:''}</details>`;
 }
 function baseShop(){
-  return `<p class="panel-note">Drop-off pad → Data sorter → Analyzers → Storage folders</p><div id="chapter-work">${chapterShop()}</div>${state.unlocked?networkShop():''}<div id="base-work"></div>${STORAGE_TYPES.filter(type=>type==='text'||picturesUnlocked(state)).map(type=>`<button class="upgrade" data-storage="${type}"><span class="upgrade-copy"><strong>Expand ${type} library</strong><small>Make room for more ${type==='text'?'text examples':'pictures'}. Knowledge increases when new files are analyzed and saved.</small><span class="upgrade-effect" id="${type}-storage-effect"></span><small id="${type}-storage-hint"></small><span class="upgrade-level">Expansion ${state.base.storageLevels[type]} · Points only</span></span><span class="upgrade-price" id="${type}-storage-price"></span></button>`).join('')}<button class="upgrade" id="speed-upgrade"><span class="upgrade-copy"><strong>Faster analysis</strong><small>Process data faster with every analyzer. Earn points sooner; gain knowledge while the library has room.</small><span class="upgrade-effect" id="speed-effect"></span><span class="upgrade-level">Level ${state.base.speedLevel} of ${analyzerMaxLevel(state)}</span></span><span class="upgrade-price" id="speed-price"></span></button><button class="upgrade" id="build-muncher"><span class="upgrade-copy"><strong>Image Analyzer</strong><small>A faster picture lane. Your Starter Analyzer keeps working alongside it.</small><span class="upgrade-effect" id="image-unlock"></span></span><span class="upgrade-price">${state.base.imageMuncher?'BUILT':PROCESSING.imageMuncherCost+' ✦'}<small id="muncher-price-note"></small></span></button>`;
+  return `<p class="panel-note">Drop-off pad → Data sorter → Analyzers → Storage folders</p><div id="chapter-work">${chapterShop()}</div>${state.unlocked&&state.base.photoSorter?'<div class="knowledge-card"><strong>Photo Sorter · Installed ✓</strong><span>Installed on your Image Analyzer. Pictures process 2× faster. Code is available at the Developer Workstation.</span></div>':''}${state.unlocked?networkShop():''}<div id="base-work"></div>${STORAGE_TYPES.filter(type=>type==='text'||picturesUnlocked(state)).map(type=>`<button class="upgrade" data-storage="${type}"><span class="upgrade-copy"><strong>Expand ${type} library</strong><small>Make room for more ${type==='text'?'text examples':'pictures'}. Knowledge increases when new files are analyzed and saved.</small><span class="upgrade-effect" id="${type}-storage-effect"></span><small id="${type}-storage-hint"></small><span class="upgrade-level">Expansion ${state.base.storageLevels[type]} · Points only</span></span><span class="upgrade-price" id="${type}-storage-price"></span></button>`).join('')}<button class="upgrade" id="speed-upgrade"><span class="upgrade-copy"><strong>Faster analysis</strong><small>Process data faster with every analyzer. Earn points sooner; gain knowledge while the library has room.</small><span class="upgrade-effect" id="speed-effect"></span><span class="upgrade-level">Level ${state.base.speedLevel} of ${analyzerMaxLevel(state)}</span></span><span class="upgrade-price" id="speed-price"></span></button><button class="upgrade" id="build-muncher"><span class="upgrade-copy"><strong>Image Analyzer</strong><small>A faster picture lane. Your Starter Analyzer keeps working alongside it.</small><span class="upgrade-effect" id="image-unlock"></span></span><span class="upgrade-price">${state.base.imageMuncher?'BUILT':PROCESSING.imageMuncherCost+' ✦'}<small id="muncher-price-note"></small></span></button>`;
 }
 function machineRow(name,job,description){
   const progress=job?Math.round((1-job.remaining/job.duration)*100):0;
   return `<div class="machine-row"><div><strong>${name}</strong><span>${job?`${PROFILES[job.profile]?.name||dataNames[job.type]} · ${job.size} KB · ${Math.ceil(job.remaining/analyzerRate(state))}s · +${job.value} points · ${canRetain(state,job)?'+1 knowledge if saved':'points only · expand library'}`:'Ready for data'}</span></div><div class="machine-progress" role="progressbar" aria-label="${name}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><i style="width:${progress}%"></i></div><small>${description}</small></div>`;
 }
 function libraryRow(type){
-  const space=storageCapacity(state,type),usedKB=storageUsed(state,type),free=space-usedKB,blocked=free<TYPES[type].size;
+  const space=storageCapacity(state,type),usedKB=storageUsed(state,type),free=space-usedKB,minimum=type==='image'&&state.unlocked?6:TYPES[type].size,blocked=free<minimum;
   const knowledge=state.knowledge[type],title=dataNames[type];
   const goal=type==='text'?(picturesUnlocked(state)?CHAPTER.sandboxText:PROCESSING.textKnowledgeGoal):CHAPTER.sandboxImages;
   const milestone=type==='text'&&!picturesUnlocked(state)?'Unlock images':'Travel vat';
-  return `<section class="library-learning ${blocked?'library-full':''}" aria-label="${title} library"><div class="library-heading"><strong>${title} library</strong><span>${knowledge} knowledge</span></div><p>${knowledge} saved ${knowledge===1?'example':'examples'} · 1 knowledge each</p>${!state.unlocked?`<p class="library-goal">${milestone}: ${goalProgress(knowledge,goal)} ${type} knowledge</p>`:''}<div class="library-space"><span>Storage used</span><strong>${usedKB} / ${space} KB</strong></div><progress aria-label="${title} storage used" max="${space}" value="${usedKB}"></progress><small class="library-outcome">${blocked?`<strong>Knowledge growth paused.</strong> ${free===0?'Library full.':`Only ${free} KB free; the smallest image needs ${TYPES[type].size} KB.`} New files still earn points. Expand this library to save more examples.`:`${free} KB free. Files that fit add +1 knowledge after analysis; files that do not fit earn points only.`}</small></section>`;
+  return `<section class="library-learning ${blocked?'library-full':''}" aria-label="${title} library"><div class="library-heading"><strong>${title} library</strong><span>${knowledge} knowledge</span></div><p>${knowledge} saved ${knowledge===1?'example':'examples'} · 1 knowledge each</p>${!state.unlocked?`<p class="library-goal">${milestone}: ${goalProgress(knowledge,goal)} ${type} knowledge</p>`:''}<div class="library-space"><span>Storage used</span><strong>${usedKB} / ${space} KB</strong></div><progress aria-label="${title} storage used" max="${space}" value="${usedKB}"></progress><small class="library-outcome">${blocked?`<strong>${type==='image'&&state.unlocked?'6 KB photo learning paused.':'Knowledge growth paused.'}</strong> ${free===0?'Library full.':`Only ${free} KB free; ${type==='image'&&state.unlocked?'a cat or dog photo':'a file'} needs ${minimum} KB.`} ${type==='image'&&state.unlocked&&!state.base.photoSorter?'Cat/dog photos that do not fit earn points, but do not count toward Photo Sorter. Expand the library, then collect and analyze more photos.':'New files still earn points. Expand this library to save more examples.'}`:`${free} KB free. Files that fit add +1 knowledge after analysis; files that do not fit earn points only.`}</small></section>`;
 }
 function updateBaseUI(){
   const summary=processingSummary(state);
@@ -304,7 +306,7 @@ function updateUI(){
   $('context-fill').style.width=load/cap*100+'%';$('context-fill').style.background=load>=cap?'#efc68d':'#bbf5a4';
   const storageBlocked=state.cargo.some(item=>STORAGE_TYPES.includes(item.type)&&!canRetain(state,item));
   $('haul').textContent=storageBlocked?'Some data will earn points only · Expand its library to learn':noise(state)?`${noise(state)} KB noise · purge at the dock`:load?`${haulValue(state)} points to drop off`:'A little room for big ideas.';
-  $('health-hud').hidden=!state.unlocked;$('health-value').textContent=Math.ceil(state.health)+' / 100';$('health-fill').style.width=state.health+'%';
+  $('health-hud').hidden=!state.unlocked;$('health-value').textContent=Math.ceil(state.health)+' / 100';$('health-fill').style.width=state.health+'%';$('health-trail').style.width=state.health+'%';
   $('call-courier').hidden=!state.programs.courier;$('call-courier').disabled=state.agents.courier.requested||state.agents.courier.cargo.length>0||!state.cargo.some(c=>c.type!=='noise');$('call-courier').textContent=state.agents.courier.status&&state.agents.courier.mode!=='idle'?state.agents.courier.status:'Call courier · up to 24 KB';
   $('debug-badge').hidden=!debugActive;
   $('health').style.width=state.health+'%';$('health').style.background=state.health<35?'#ef9a9a':'#bbf5a4';
@@ -387,7 +389,7 @@ function step(dt){
   }
   const delivery=autoDropOff(state,player);
   if(delivery){world.deliverData(delivery.items);save();tone(700,.12);toast(delivery.value?`Dropped off ${delivery.count} examples! ${delivery.items.some(item=>!canRetain(state,item))?'Library space is limited: overflow earns points only.':'Home will analyze them while you explore.'}`:'Noise cleared. Ready for a fresh run.');}
-  function hurt(amount){if(player.hurt>0)return;state.health=Math.max(0,state.health-malwareDamage(state,amount));player.hurt=1.2;tone(130,.15);world.burst(new THREE.Vector3(player.x,0,player.z),0xf0a4ae,8);if(state.health<=0){const lost=defeat(state);player.x=-3;player.z=5;player.vx=0;player.vz=0;destination=null;route=[];returning=false;save();toast(`Emergency reboot. Lost ${lost} carried points. Your upgrades are safe.`);}}
+  function hurt(amount){if(player.hurt>0)return;const damage=Math.min(state.health,malwareDamage(state,amount));state.health=Math.max(0,state.health-damage);damageFeedback.hit(damage,player,state.programs.firewall);player.hurt=1.2;tone(130,.15);world.burst(new THREE.Vector3(player.x,0,player.z),0xf0a4ae,8);if(state.health<=0){const lost=defeat(state);player.x=-3;player.z=5;player.vx=0;player.vz=0;destination=null;route=[];returning=false;save();toast(`Emergency reboot. Lost ${lost} carried points. Your upgrades are safe.`);}}
   for(const e of enemies){
     e.view.visible=state.unlocked&&e.wait<=0;if(!state.unlocked)continue;
     if(e.wait>0){e.wait-=dt;continue;}
@@ -426,7 +428,10 @@ function frame(ms){
   if(!paused){
     agentSystem.update(dt,player);
     const pending=state.base.queue.length||state.base.basic||state.base.image||state.base.extra;
-    const earned=processBase(state,dt,world.storeData);processingSaveTime+=dt;
+    const earned=processBase(state,dt,(item,worker,retained)=>{
+      world.storeData(item,worker,retained);
+      if(!retained&&['cat','dog'].includes(item.profile)&&!state.base.photoSorter&&time-lastLearningWarning>8){lastLearningWarning=time;toast(`${item.profile==='cat'?'Cat':'Dog'} photo earned points, but wasn't learned: image library too full. Expand it, then collect more photos.`);}
+    });processingSaveTime+=dt;
     if(earned){
       save();tone(540,.04);
       if(!pictureMilestoneSeen&&picturesUnlocked(state)){pictureMilestoneSeen=true;toast('Picture training unlocked! Drop pictures at home; the Starter Analyzer can process them too.');if(panel==='dock')renderPanel();}
@@ -437,6 +442,7 @@ function frame(ms){
   if(!paused&&!panel)targets=step(dt);else targets=[];
   const logicEnd=measuring?performance.now():0;
   world.draw(player,targets,dt,time,destination);
+  damageFeedback.update(paused?0:dt,state.health,!!panel||!state.unlocked);
   const sceneEnd=measuring?performance.now():0,w=world.viewport.width;
   for(const l of labels){
     const position=l.pos(),p=world.project(position);

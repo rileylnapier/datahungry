@@ -8,6 +8,7 @@ import { loadByteModel } from './byte-model.js';
 import { createByteAnimator } from './byte-animation.js';
 import { createByteBlink } from './byte-blink.js';
 import { createByteCollectors } from './byte-collectors.js';
+import { createBrainAttachments } from './byte-attachments.js';
 import { range, level, connections } from './state.js';
 import { createWorldFog } from './world-fog.js';
 import { clampZoom } from './zoom.js';
@@ -252,7 +253,11 @@ export function createScene(canvas, state, content, exploration) {
   for(const side of [-1,1])for(let i=0;i<11;i++){box(scene,0x344653,side*(4+i*1.65),.5,gateZ,1.55,1,.6);box(scene,0x7c7498,side*(4+i*1.65),1.05,gateZ,1.55,.08,.66);}
   const byte=new THREE.Group();scene.add(byte);
   const body=new THREE.Group();byte.add(body);
-  const collectors=createByteCollectors(body,{applyMaterial:worldFog.apply});
+  let brainAttachments=null;
+  const collectors=createByteCollectors(body,{applyMaterial:worldFog.apply,brainAnchor:(i,out)=>{
+    if(brainAttachments?.(i,out))return out;
+    out.set(0,.29,.44-i*.23);brain.localToWorld(out);return body.worldToLocal(out);
+  }});
   collectors.loading.then(()=>canvas.dataset.byteCollectors='ready').catch(error=>{canvas.dataset.byteCollectors='fallback';console.warn('Collector rig unavailable',error);});
   const brain=new THREE.Group();brain.position.y=1.1;body.add(brain);
   ball(brain,0xc5a0df,-.21,0,0,.41,.34,.35);ball(brain,0xc5a0df,.21,0,0,.41,.34,.35);
@@ -264,6 +269,7 @@ export function createScene(canvas, state, content, exploration) {
   canvas.dataset.byteModel='loading';
   loadByteModel({applyMaterial:worldFog.apply,anisotropy:Math.min(4,renderer.capabilities.getMaxAnisotropy())}).then(model=>{
     brain.clear();brain.add(model);byteMeshReady=true;currentLevel=-1;
+    brainAttachments=createBrainAttachments(model,brain,body);
     byteAnimator=createByteAnimator(model);
     byteBlink=createByteBlink(model);
     canvas.dataset.byteAnimated=String(!!byteAnimator);

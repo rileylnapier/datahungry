@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data Hungry · Device preview</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#08151d;color:#e4efdf;font:14px system-ui;overflow:hidden}
+    header{height:68px;padding:12px 20px;display:flex;gap:16px;align-items:center;border-bottom:1px solid #ffffff20}
+    select,a{font:inherit;color:inherit;background:#213b40;border:1px solid #9ab6aa66;border-radius:8px;padding:9px;text-decoration:none}label{display:flex;gap:10px;align-items:center}small{color:#a1bab3}#stage{height:calc(100dvh - 68px);display:grid;place-items:center;overflow:hidden}#frame{position:relative}iframe{position:absolute;inset:0;border:0;transform-origin:top left;background:#101b25;box-shadow:0 0 0 1px #a2bfaa55;border-radius:12px}
+    @media(max-width:650px){header{padding:8px;gap:8px}header>strong,small{display:none}label{gap:5px}select{max-width:200px}}
+  </style>
+</head>
+<body>
+  <header><strong>Data Hungry</strong><label>Viewport <select id="device"><option value="auto">Auto</option><option value="phone-portrait">Phone portrait</option><option value="phone-landscape">Phone landscape</option><option value="tablet-portrait">Tablet portrait</option><option value="tablet-landscape">Tablet landscape</option></select></label><small id="dimensions"></small><a href="./">Back to game ↗</a></header>
+  <main id="stage"><div id="frame"><iframe id="game" src="./" title="Data Hungry device preview" allow="autoplay; fullscreen"></iframe></div></main>
+  <script type="module" src="./src/device-preview.js"></script>
+</body>
+</html>

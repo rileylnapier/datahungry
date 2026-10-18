@@ -21,7 +21,7 @@ export function cloneCollector(template){
   return copy;
 }
 
-export function createByteCollectors(parent,{applyMaterial=()=>{},template=null}={}){
+export function createByteCollectors(parent,{applyMaterial=()=>{},template=null,brainAnchor=null}={}){
   const slots=[],group=new THREE.Group();group.name='Byte collectors';parent.add(group);
   let ready=false;
   const asset=template||(templatePromise??=new GLTFLoader().loadAsync(COLLECTOR_URL));
@@ -63,6 +63,7 @@ export function createByteCollectors(parent,{applyMaterial=()=>{},template=null}
         // back along the crest without moving the existing forehead sprout.
         const anchor=inVat?outward.clone().multiplyScalar(.76):new THREE.Vector3(0,0,.44-i*.23);
         anchor.y=inVat?.48:.84-Math.abs(anchor.z)*.13;
+        if(!inVat&&brainAnchor)brainAnchor(i,anchor);
         if(dockPorts.length&&!dockPorts.includes(s.port)){
           const origin=parent.localToWorld(anchor.clone());
           const available=dockPorts.filter(port=>!slots.some(other=>other!==s&&other.port===port));

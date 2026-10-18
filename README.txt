@@ -15,6 +15,12 @@ Play
   Drag anywhere to steer, tap the ground to move, or use WASD / arrows.
   Zoom with +/− buttons, mouse wheel, keyboard +/− (0 resets), or two-finger pinch.
   Zoom ranges from 65% to 175% and saves. UI text keeps its size.
+  Knowledge appears beside the objective: first text progress toward images, then
+  text/image progress toward the vat. Completed goals show a check mark.
+  /preview.html previews phone and tablet layouts in portrait/landscape; Auto
+  fills the browser. Pause on localhost also links to it. Resizing preserves the
+  current session and uses real iframe viewport sizes, scaled to fit the preview.
+  The preview shares this browser’s save; it does not reset progress.
   Explore to clear fog; discovered terrain and landmarks stay revealed and save.
   The map hides undiscovered feeds but guides you to the first Word pipe.
   Begin as a small exposed brain in a large sandbox inside a local computer.
@@ -206,3 +212,6 @@ Local performance logging
   npm run perf:summary prints the latest session, slow frames, errors and markers.
   Diagnostic fields include browser/device info and game context, never saved-game
   payloads or inventory. Preview/build hosting does not enable the write endpoint.
+
+  Brain hose roots bind to crown surface triangles and follow brain movement,
+  tilt and deformation. Vat hoses remain mounted to the hardware ring.

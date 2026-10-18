@@ -146,3 +146,20 @@
 .mail-reference{display:flex;align-items:center;gap:18px;padding:18px;background:#2c4042;border-radius:16px}.mail-reference>span{font-size:32px;color:#d4ecb2}.mail-reference p{margin:4px 0!important}.cargo-audio{color:#88dfe1}.cargo-video{color:#f3b1c7}.audio-dot{background:#88dfe1}.video-dot{background:#f3b1c7}
 
 .story-reader>.eyebrow{display:block;min-height:36px;padding-right:48px}
+/* Physical device conversations leave Byte and the connected hose in view. */
+.device-conversation #modal-backdrop{backdrop-filter:none;background:linear-gradient(90deg,transparent 45%,#07151a55);place-items:center end;pointer-events:auto}
+.device-conversation #panel{width:min(440px,39vw);max-height:88dvh;padding:24px}
+.device-conversation .story-message{padding:18px;gap:12px;min-height:0}
+.device-conversation .story-message p{font-size:20px!important}
+.device-conversation .story-avatar{flex-basis:32px;height:32px;font-size:20px}
+.device-conversation .wallet,.device-conversation #health-hud,.device-conversation .bottom-hud,.device-conversation .controls-hint{visibility:hidden}
+@media(max-width:900px){
+ .device-conversation #modal-backdrop{background:linear-gradient(0deg,#07151a66,transparent 65%);align-items:end;justify-items:center;padding:12px}
+ .device-conversation #panel{width:min(560px,100%);max-height:44dvh;padding:20px}
+ .device-conversation .story-reader>.eyebrow{min-height:24px}
+ .device-conversation #panel h2{font-size:23px;margin-top:8px}
+ .device-conversation .story-message{margin:14px 0;padding:14px}
+ .device-conversation .story-message p{font-size:18px!important}
+ .device-conversation .story-pagination{margin-bottom:10px}
+ .device-conversation .zone-info,.device-conversation .mission,.device-conversation .knowledge-hud,.device-conversation .legend,.device-conversation .byte-card{visibility:hidden}
+}

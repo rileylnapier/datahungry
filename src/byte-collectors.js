@@ -55,23 +55,33 @@ export function createByteCollectors(parent,{applyMaterial=()=>{},template=null,
       for(let i=0;i<slots.length;i++)if(i>=count||!targets.includes(slots[i].target))slots[i].target=null;
       for(const target of targets)if(!slots.some(s=>s.target===target)){const free=slots.slice(0,count).find(s=>!s.target);if(free)free.target=target;}
       parent.updateWorldMatrix(true,false);
+      const anchors=Array.from({length:count},(_,i)=>{
+        const angle=i/count*Math.PI*2,anchor=inVat?new THREE.Vector3(Math.sin(angle)*.76,.48,Math.cos(angle)*.76):new THREE.Vector3(0,0,.44-i*.23);
+        if(!inVat){anchor.y=.84-Math.abs(anchor.z)*.13;if(brainAnchor)brainAnchor(i,anchor);}
+        return anchor;
+      });
+      // A single service socket uses the nearest existing hose, so vat hoses
+      // don't have to cross the brain or glass to reach a device behind Byte.
+      let serviceIndex=-1;
+      if(dockPorts.length===1){
+        serviceIndex=slots.findIndex((s,i)=>i<count&&s.port===dockPorts[0]);
+        if(serviceIndex<0){let distance=Infinity;anchors.forEach((anchor,i)=>{const d=parent.localToWorld(anchor.clone()).distanceToSquared(dockPorts[0]);if(d<distance){distance=d;serviceIndex=i;}});}
+      }
       slots.forEach((s,i)=>{
         s.root.visible=i<count;if(!s.root.visible)return;
         const angle=inVat?i/count*Math.PI*2:(count===1?0:i/count*Math.PI*2);
         const outward=inVat?new THREE.Vector3(Math.sin(angle),0,Math.cos(angle)):new THREE.Vector3(0,0,1);
         // The first sprout sits above the face like a unicorn horn. Upgrades grow
         // back along the crest without moving the existing forehead sprout.
-        const anchor=inVat?outward.clone().multiplyScalar(.76):new THREE.Vector3(0,0,.44-i*.23);
-        anchor.y=inVat?.48:.84-Math.abs(anchor.z)*.13;
-        if(!inVat&&brainAnchor)brainAnchor(i,anchor);
-        if(dockPorts.length&&!dockPorts.includes(s.port)){
+        const anchor=anchors[i],ports=dockPorts.length===1&&i!==serviceIndex?[]:dockPorts;
+        if(ports.length&&!ports.includes(s.port)){
           const origin=parent.localToWorld(anchor.clone());
-          const available=dockPorts.filter(port=>!slots.some(other=>other!==s&&other.port===port));
+          const available=ports.filter(port=>!slots.some(other=>other!==s&&other.port===port));
           s.port=available.sort((a,b)=>origin.distanceToSquared(a)-origin.distanceToSquared(b))[0]||null;
         }
-        s.dockBlend=THREE.MathUtils.lerp(s.dockBlend,dockPorts.length&&s.port?1:0,1-Math.exp(-dt*10));
+        s.dockBlend=THREE.MathUtils.lerp(s.dockBlend,ports.length&&s.port?1:0,1-Math.exp(-dt*10));
         if(s.dockBlend>.995)s.dockBlend=1;
-        if(s.dockBlend<.001){s.dockBlend=0;if(!dockPorts.length)s.port=null;}
+        if(s.dockBlend<.001){s.dockBlend=0;if(!ports.length)s.port=null;}
         if(s.target){s.port=null;s.dockBlend=0;}
         s.kick=Math.max(0,s.kick-dt);
         const recoil=Math.sin(s.kick/.25*Math.PI)*.09;

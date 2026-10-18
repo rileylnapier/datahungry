@@ -45,7 +45,7 @@ const player={x:0,z:debugActive&&networkAccess(state)?-44:3,vx:0,vz:0,hurt:0,mun
 const creatures=[],enemies=[],emitters=[];
 let time=0,last=0,uiTime=0,paused=false,panel=null,destination=null,returning=false,gateCooldown=0;
 let storySite=null,terminalMode=false,lastStoryNotice='',storyPanelSignature='';
-let route=[],dockTab='base',processingSaveTime=0,benchmarkView=null;
+let route=[],dockTab='base',processingSaveTime=0,benchmarkView=null,interactionDevice=null;
 document.addEventListener('visibilitychange',()=>{last=0;});
 const dataNames={text:'Text',image:'Image',code:'Code',audio:'Sound',video:'Video'};
 const perf=createPerformanceMonitor(world.renderer,()=>({zone:content.areas[state.zone].name,collectors:connections(state),queue:processingSummary(state).count,creatures:creatures.filter(c=>c.wait<=0&&c.view.group.visible).length,panel:panel||'playing',zoom:world.getZoom()}),enabled=>{const button=$('performance-toggle');if(button)button.textContent=`${enabled?'Hide':'Show'} performance monitor`;});
@@ -113,8 +113,8 @@ const nearbyLabel=label('specimen-label','',()=>new THREE.Vector3(nearby?.x??pla
 const keys=new Set();let pointer=null,pinch=null;const touchPoints=new Map();
 const joystick=$('joystick');
 function clearInput(){keys.clear();pointer=null;pinch=null;touchPoints.clear();joystick.hidden=true;}
-function closePanel(){benchmarkView?.destroy();benchmarkView=null;$('panel').classList.remove('benchmark-panel');panel=null;$('modal-backdrop').hidden=true;clearInput();gateCooldown=3;$('world').focus({preventScroll:true});}
-function showPanel(type){panel=type;clearInput();player.vx=0;player.vz=0;destination=null;route=[];returning=false;$('modal-backdrop').hidden=false;renderPanel();if(type!=='benchmark')$('close-panel').focus();}
+function closePanel(){benchmarkView?.destroy();benchmarkView=null;$('panel').classList.remove('benchmark-panel');panel=null;interactionDevice=null;$('app').classList.remove('device-conversation');$('modal-backdrop').hidden=true;clearInput();gateCooldown=3;$('world').focus({preventScroll:true});}
+function showPanel(type,device=null){interactionDevice=type==='story'?device:type==='benchmark'?interactionDevice:null;panel=type;$('app').classList.toggle('device-conversation',type==='story'&&!!interactionDevice&&interactionDevice!=='home');clearInput();player.vx=0;player.vz=0;destination=null;route=[];returning=false;$('modal-backdrop').hidden=false;renderPanel();if(type!=='benchmark')$('close-panel').focus();}
 function upgradeCard(id,u){
   const current=state.levels[id],maxed=current>=maxLevel(id,state),price=cost(state,id),locked=!upgradeUnlocked(state,id);
   let change='';
@@ -204,7 +204,7 @@ changeZoom(state.zoom);
 $('world').addEventListener('wheel',e=>{if(panel)return;e.preventDefault();const delta=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?window.innerHeight:1);changeZoom(world.getZoom()*Math.exp(-delta*.0015));},{passive:false});
 $('close-panel').onclick=()=>{if(panel==='pause'||panel==='debug'){paused=false;$('pause').textContent='Ⅱ';$('pause').setAttribute('aria-label','Pause game');}closePanel();};
 $('pause').onclick=()=>{if(panel)return;paused=true;$('pause').textContent='▷';$('pause').setAttribute('aria-label','Resume game');showPanel('pause');};
-function openStoryLog(){if(paused)return;terminalMode=nearbyStorySite(state,player)==='terminal';showPanel('story');}
+function openStoryLog(){if(paused)return;terminalMode=nearbyStorySite(state,player)==='terminal';showPanel('story',terminalMode?'terminal':null);}
 function goToStoryObjective(){
   const q=storyObjective(state);
   if(state.story.active){openStoryLog();return;}
@@ -215,10 +215,10 @@ function goToStoryObjective(){
 }
 function interactStory(id){
   const event=siteEvent(state,id);terminalMode=id==='terminal';
-  if(event){beginStory(state,event);save();showPanel('story');}
+  if(event){beginStory(state,event);save();showPanel('story',id);}
   else if(id==='home'){dockTab='base';showPanel('dock');}
   else if(id==='photos'||id==='archive'){toast('Download the nearby '+(id==='photos'?'cyan sound':'pink video')+' clips and drop them off at home.');}
-  else if(id==='terminal'||id==='relay')showPanel('story');
+  else if(id==='terminal'||id==='relay')showPanel('story',id);
   else toast(id==='infected'&&!state.programs.firewall?'Build a Malware Shield at home before reading this infected node.':id==='backup'&&!state.programs.cleaner?'Build a Malware Cleaner at home to recover this corrupted node.':'Follow your current assignment. This connection will be useful soon.');
 }
 $('assignments').onclick=openStoryLog;
@@ -484,7 +484,7 @@ function frame(ms){
   }
   if(!paused&&!panel)targets=step(dt);else targets=[];
   const logicEnd=measuring?performance.now():0;
-  world.draw(player,targets,dt,time,destination);
+  world.draw(player,targets,dt,time,destination,interactionDevice);
   damageFeedback.update(paused?0:dt,state.health,!!panel||!state.unlocked);
   const sceneEnd=measuring?performance.now():0,w=world.viewport.width;
   for(const l of labels){

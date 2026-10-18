@@ -81,3 +81,24 @@ test('home connections occupy unique ports, track a rotated scaled Byte and rele
   c.update({count:1,targets:[{x:2,z:8}],dt:.05});
   assert.equal(parent.getObjectByName('Byte collectors').children.filter(o=>o.visible).length,1);
 });
+
+test('device uses exactly one unlocked hose, reaches its socket, and releases back to collection',async()=>{
+  const {DEVICE_PORTS}=await import('../src/device-ports.js');
+  const port=DEVICE_PORTS.terminal;
+  for(const [inVat,count] of [[false,1],[false,4],[true,4],[true,10]]){
+    const parent=new THREE.Group();parent.position.set(4,0,3);parent.rotation.y=-.5;parent.scale.setScalar(1.275);
+    const c=createByteCollectors(parent,{template:asset()});await c.loading;
+    const target={x:6,z:3};
+    for(let i=0;i<20;i++)c.update({count,inVat,targets:[target],dockPorts:[port],dt:.05});
+    const assigned=Array.from({length:10},(_,i)=>c.getDockPort(i)).filter(Boolean);
+    assert.deepEqual(assigned,[port]);assert.equal(c.getOrigin(target),undefined);
+    assert.equal(parent.getObjectByName('Byte collectors').children.filter(o=>o.visible).length,count);
+    const index=Array.from({length:count},(_,i)=>i).find(i=>c.getDockPort(i)===port);
+    const end=c.getDockPoint(index,1),previous=c.getDockPoint(index,.999);
+    const tip=end.clone().add(end.clone().sub(previous).normalize().multiplyScalar(.175*1.275));
+    assert.ok(tip.distanceTo(new THREE.Vector3(port.x,port.y,port.z))<.005);
+    for(let i=0;i<20;i++)c.update({count,inVat,dt:.05});
+    assert.ok(Array.from({length:count},(_,i)=>c.getDockPort(i)).every(p=>p===null));
+    c.update({count,inVat,targets:[target],dt:.05});assert.ok(c.getOrigin(target));
+  }
+});

@@ -282,3 +282,13 @@ STORY CHAPTER: A LITTLE BIT READY
   hardware, money, knowledge and queues. Existing pre-story vat saves keep access.
   Debug tools include After Data Trials (meet PATCH), Start Local Network (read the
   email), and Server repaired (assemble and test the Web Bridge), all on test saves.
+
+DEVICE HOSE CONNECTIONS
+----------------------
+Training Terminal and network consoles have glowing service sockets. Interacting
+with a nearby device plugs one existing hose into its socket, sends light pulses
+toward Byte, and releases when the conversation closes. New games still start
+with the bare brain and one head hose; the vat uses its nearest unlocked hose.
+Home keeps its separate multi-hose unloading ring. Remote assignment-log reading
+does not create a cable across the map. Connected conversations leave the world
+visible, with a raised camera and bottom dialogue sheet on smaller screens.

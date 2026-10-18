@@ -5,6 +5,7 @@ import * as THREE from '../vendor/three/three.module.js';
 import {createEnvironmentArt,hardwareGeometry} from './environment-art.js';
 import {createSurfaceTexture} from './board-surfaces.js';
 import {DOCK_PORTS,atHomeDock} from './home-dock.js';
+import {DEVICE_PORTS,devicePort} from './device-ports.js';
 import {CAMERA_OFFSET} from './camera-view.js';
 import { createByteVat, VAT_BRAIN_HEIGHT } from './byte-vat.js';
 import { loadByteModel } from './byte-model.js';
@@ -216,6 +217,19 @@ export function createScene(canvas, state, content, exploration) {
     rim.material=rim.material.clone();worldFog.apply(rim.material);
     return {port,rim};
   });
+  const deviceSockets=Object.entries(DEVICE_PORTS).map(([id,port])=>{
+    const g=new THREE.Group();g.name=`${id} service socket`;scene.add(g);
+    const site=STORY_SITES[id];
+    box(g,0x36595b,port.x,.12,port.z,.7,.24,.7);
+    cylinder(g,0xb9c9b2,port.x,.3,port.z,.27,.25);
+    cylinder(g,0x0b1d25,port.x,.44,port.z,.19,.06);
+    const rim=torus(g,0x9fdbc5,port.x,port.y,port.z,.22,.04,.2);
+    rim.material=rim.material.clone();
+    const path=new THREE.LineCurve3(new THREE.Vector3(site.x,.1,site.z),new THREE.Vector3(port.x,.1,port.z));
+    mesh(g,new THREE.TubeGeometry(path,1,.035,5,false),mat(0x617e79));
+    return {id,port,rim};
+  });
+  const devicePackets=Array.from({length:3},()=>{const bit=ball(scene,0xcaf3df,0,0,0,.055,.055,.055,1);bit.visible=false;return bit;});
   const dockPackets=Array.from({length:10},()=>{const bit=ball(scene,0xd8efa8,0,0,0,.065,.065,.065,1);bit.visible=false;return bit;});
   let dockTransfer=0,dockTime=0,dockColors=[];
   const hopper=new THREE.Group();hopper.position.set(BASE_SORTER.x,0,BASE_SORTER.z);scene.add(hopper);
@@ -450,7 +464,7 @@ export function createScene(canvas, state, content, exploration) {
   new ResizeObserver(resize).observe(canvas);
   function project(pos){const p=pos.clone().project(camera);return {x:(p.x*.5+.5)*viewport.width,y:(-.5*p.y+.5)*viewport.height,visible:p.z<1&&Math.abs(p.x)<1.1&&Math.abs(p.y)<1.1};}
   function worldPoint(x,y){const rect=canvas.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((x-rect.left)/rect.width*2-1,-(y-rect.top)/rect.height*2+1),camera);return raycaster.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),new THREE.Vector3());}
-  function draw(player, targets, dt, time, destination){
+  function draw(player, targets, dt, time, destination,interactionDevice=null){
     for(const [id,v] of Object.entries(agentViews)){
       const a=state.agents[id];v.group.visible=state.programs[id];v.beam.visible=state.programs[id]&&!!a.targetPosition;
       v.group.position.set(a.x,Math.sin(time*4+(id==='courier'?0:2))*.06,a.z);v.group.rotation.y=a.heading||0;
@@ -516,21 +530,33 @@ export function createScene(canvas, state, content, exploration) {
     damageRing.visible=hitStrength>0;damageRing.position.set(player.x,indicatorHeight+.02,player.z);
     damageRing.scale.setScalar((state.unlocked?1.6:.9)+(reduceHitMotion.matches?0:hitAge*2));damageRing.material.opacity=hitStrength*.85;
     if(hitStrength>0&&!reduceHitMotion.matches){body.rotation.z+=Math.sin(hitAge*25)*.24*hitStrength;body.position.y+=Math.sin(hitAge*12)*.1*hitStrength;}
-    const desired=new THREE.Vector3(player.x,0,player.z-1.3);focus.lerp(desired,1-Math.exp(-dt*3));camera.position.copy(focus).add(new THREE.Vector3(...CAMERA_OFFSET));camera.lookAt(focus);
+    const conversationOffset=interactionDevice&&interactionDevice!=='home'&&viewport.width<=900?4.5:-1.3;
+    const desired=new THREE.Vector3(player.x,0,player.z+conversationOffset);focus.lerp(desired,1-Math.exp(-dt*3));camera.position.copy(focus).add(new THREE.Vector3(...CAMERA_OFFSET));camera.lookAt(focus);
     radiusRing.position.set(player.x,indicatorHeight,player.z);radiusRing.scale.setScalar(range(state));
     targetRing.visible=!!destination;if(destination)targetRing.position.set(destination.x,indicatorHeight,destination.z);
     barrier.visible=!networkAccess(state);bars.forEach(b=>b.visible=!networkAccess(state));
     for(const cable of cables)if(cable.target&&!targets.includes(cable.target))cable.target=null;
     for(const target of targets){if(!cables.some(c=>c.target===target)){const available=cables.find(c=>!c.target&&c.completion<=0);if(available)available.target=target;}}
-    const docking=atHomeDock(player)&&speed<.6;
-    collectors.update({count:connections(state),targets,dt,time,inVat:state.unlocked,dockPorts:docking?DOCK_PORTS:[]});
+    const servicePort=devicePort(interactionDevice,player);
+    const docking=!servicePort&&atHomeDock(player)&&speed<.6;
+    collectors.update({count:connections(state),targets,dt,time,inVat:state.unlocked,dockPorts:servicePort?[servicePort]:docking?DOCK_PORTS:[]});
     dockTime+=dt;dockTransfer=Math.max(0,dockTransfer-dt);
+    const serviceIndex=servicePort?Array.from({length:connections(state)},(_,i)=>i).find(i=>collectors.getDockPort(i)===servicePort):undefined;
+    for(const socket of deviceSockets){
+      const connected=serviceIndex!==undefined&&socket.port===servicePort;
+      const available=socket.id==='terminal'&&!!terminalEvent(state);
+      socket.rim.material.emissiveIntensity=connected?.85+Math.sin(dockTime*7)*.25:available?.4+Math.sin(dockTime*3)*.2:.16;
+    }
+    devicePackets.forEach((bit,i)=>{
+      const p=serviceIndex!==undefined?collectors.getDockPoint(serviceIndex,1-(dockTime*.65+i/3)%1):null;
+      bit.visible=!!p;if(p)bit.position.copy(p);
+    });
     for(const socket of dockSockets){
       const connected=dockPackets.some((_,i)=>collectors.getDockPort(i)===socket.port);
       socket.rim.material.emissiveIntensity=connected?(dockTransfer>0?1.1+Math.sin(dockTime*12)*.3:.55):.12;
     }
     dockPackets.forEach((bit,i)=>{
-      const p=dockTransfer>0?collectors.getDockPoint(i,(dockTime*1.7+i*.13)%1):null;
+      const p=docking&&dockTransfer>0?collectors.getDockPoint(i,(dockTime*1.7+i*.13)%1):null;
       bit.visible=!!p;
       if(p){bit.position.copy(p);bit.material=mat(dockColors[i%dockColors.length]??0xd8efa8,1);}
     });

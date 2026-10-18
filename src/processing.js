@@ -18,7 +18,7 @@ export function upgradeStorage(state,type){
   if(!STORAGE_TYPES.includes(type)||state.points<storageCost(state,type))return false;
   state.points-=storageCost(state,type);state.base.storageLevels[type]++;return true;
 }
-const validItem=item=>item&&['text','image','code'].includes(item.type)&&Number.isInteger(item.size)&&item.size>0&&item.size<=12&&Number.isInteger(item.value)&&item.value>0&&item.value<=2000&&validProfile(item.type,item.profile);
+const validItem=item=>item&&['text','image','code'].includes(item.type)&&Number.isInteger(item.size)&&item.size>0&&item.size<=12&&Number.isInteger(item.value)&&item.value>0&&item.value<=2000&&validProfile(item.type,item.profile,item.size);
 const copyItem=item=>({type:item.type,size:item.size,value:item.value,...(item.profile?{profile:item.profile}:{}),...(item.trial===true?{trial:true}:{})});
 function restoreJob(job){
   if(!validItem(job)||!Number.isFinite(job.duration)||job.duration<=0||job.duration>240||!Number.isFinite(job.remaining)||job.remaining<=0||job.remaining>job.duration)return null;

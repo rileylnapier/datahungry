@@ -2,12 +2,12 @@ import {BENCHMARK,benchmarkCard,answerBenchmark,benchmarkScore} from '../src/ben
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createState, collect, bank, unlock, serialize, readSave } from '../src/state.js';
-import { startTrial, trialPassed, buildProgram, codeAvailable, visitDevice } from '../src/chapter.js';
+import { CHAPTER, sandboxReady, startTrial, trialPassed, buildProgram, codeAvailable, visitDevice } from '../src/chapter.js';
 import { processBase, processingSummary } from '../src/processing.js';
 import { validateContent } from '../src/content.js';
 import starter from '../src/starter-content.js';
 
-const ready=()=>createState({knowledge:{text:60,image:8},base:{imageMuncher:true},levels:{capacity:2}});
+const ready=()=>createState({knowledge:{text:CHAPTER.sandboxText,image:CHAPTER.sandboxImages}});
 test('swipe benchmark resumes after reload, cannot advance through collecting, and grants the vat once',()=>{
   let s=ready();assert.equal(startTrial(createState()),false);
   assert.equal(startTrial(s),true);assert.equal(startTrial(s),false);
@@ -79,4 +79,16 @@ test('chapter validation rejects invalid profiles and balance; legacy unlock rem
   assert.equal(collect(s,'text',false,1,'cat'),false);
   assert.equal(s.cargo.length,0);assert.equal(starter.bosses[0].enabled,false);
   assert.equal(starter.areas[1].hallucinations.count,0);assert.equal(starter.areas[1].hostiles.length,0);
+});
+
+ test('vat trial gate uses both knowledge goals, regardless of points or purchased upgrades',()=>{
+  const s=ready();assert.equal(sandboxReady(s),true);assert.equal(s.base.imageMuncher,false);
+  assert.ok(Object.values(s.levels).every(n=>n===0));assert.equal(s.points,0);
+  assert.equal(startTrial(s),true);
+  for(const kind of ['text','image']){
+    const below=ready();below.knowledge[kind]--;below.points=100000;below.total=100000;
+    below.levels={...below.levels,capacity:5,range:5,decode:5,parallel:3};
+    below.base.imageMuncher=true;below.base.speedLevel=3;
+    assert.equal(sandboxReady(below),false);assert.equal(startTrial(below),false);
+  }
 });

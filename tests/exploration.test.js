@@ -30,7 +30,7 @@ test('large packets use their actual capacity, reward, download time, and analys
   assert.equal(s.knowledge.text,1);assert.equal(collect(s,'text',false,99),false);
 });
 test('each pipe has a unique identity and content rejects invalid packet sizes',()=>{
-  const spawns=starter.areas[0].spawns;
+  const spawns=starter.areas[0].spawns.filter(s=>s.emitter);
   assert.equal(new Set(spawns.map(s=>s.emitter.id)).size,4);
   assert.deepEqual(spawns.filter(s=>s.creature==='text').map(s=>s.packetSize),[1,3]);
   assert.deepEqual(spawns.filter(s=>s.creature==='image').map(s=>s.packetSize),[2,4]);

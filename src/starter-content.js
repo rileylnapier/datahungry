@@ -1,7 +1,7 @@
 // Generated from content/local-manifest.json by scripts/build.mjs.
 export default {
   "schemaVersion": 1,
-  "contentVersion": 11,
+  "contentVersion": 13,
   "minimumAppVersion": "0.1.0",
   "channel": "development",
   "disabled": false,
@@ -75,7 +75,7 @@ export default {
       "spawns": [
         {
           "creature": "text",
-          "count": 20,
+          "count": 10,
           "habitat": {
             "minX": -14,
             "maxX": -7,
@@ -93,7 +93,7 @@ export default {
         },
         {
           "creature": "text",
-          "count": 16,
+          "count": 6,
           "packetSize": 3,
           "habitat": {
             "minX": -16,
@@ -111,7 +111,7 @@ export default {
         },
         {
           "creature": "image",
-          "count": 16,
+          "count": 8,
           "habitat": {
             "minX": 3,
             "maxX": 16,
@@ -129,7 +129,7 @@ export default {
         },
         {
           "creature": "image",
-          "count": 12,
+          "count": 4,
           "packetSize": 4,
           "habitat": {
             "minX": 6,
@@ -143,6 +143,30 @@ export default {
             "x": 12,
             "z": -14,
             "interval": 3
+          }
+        },
+        {
+          "creature": "text",
+          "profile": "full_book",
+          "count": 1,
+          "packetSize": 12,
+          "habitat": {
+            "minX": -12,
+            "maxX": -7,
+            "minZ": -25,
+            "maxZ": -19
+          }
+        },
+        {
+          "creature": "image",
+          "profile": "image_4k",
+          "count": 1,
+          "packetSize": 12,
+          "habitat": {
+            "minX": 1,
+            "maxX": 6,
+            "minZ": -26,
+            "maxZ": -21
           }
         }
       ],
@@ -271,9 +295,8 @@ export default {
     "analyzerSpeedCost": 24
   },
   "chapter": {
-    "sandboxText": 60,
-    "sandboxImages": 8,
-    "sandboxUpgrades": 2,
+    "sandboxText": 120,
+    "sandboxImages": 40,
     "trialText": 6,
     "trialImages": 4,
     "photoGoal": 6,

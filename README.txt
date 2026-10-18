@@ -18,11 +18,12 @@ Play
   Explore to clear fog; discovered terrain and landmarks stay revealed and save.
   The map hides undiscovered feeds but guides you to the first Word pipe.
   Begin as a small exposed brain in a large sandbox inside a local computer.
-  Five pipes emit safe data: Words (1 KB), Paragraphs (3 KB), Low-res images (2 KB),
-  High-res images (4 KB), and Code (3 KB, unlocked later). Bigger packets are visibly
+  Four sandbox pipes emit safe data: Words (1 KB), Paragraphs (3 KB), Low-res images (2 KB),
+  and High-res images (4 KB). Code (3 KB) comes later in the network. Bigger packets are visibly
   larger, take more carrying space and download/analysis time, and pay more points.
   Each packet still teaches one example. Emission cadence, sizes and locations live in JSON;
-  inactive creatures are recycled so the population stays bounded. Use the
+  the per-pipe count caps are 10 words, 6 paragraphs, 8 low-res and 4 high-res images.
+  Full pipes pause until collection frees a slot, without queuing a catch-up burst. Use the
   network-map button to see your location and travel to a neighborhood.
   Move near wildlife to collect automatically. The context window is finite.
   Tentacles are segmented download bars with data type, size, percentage, and a
@@ -73,14 +74,18 @@ Play
   Upgrade cards explain their effect and show the next improvement before purchase.
   Steering accelerates quickly and brakes with a short coast. Byte turns, leans,
   hops as a brain, rolls its wheels after evolving, and bounces on collection. The camera follows at a closer scale.
-  Data Trials unlocks at 60 text knowledge, 8 image knowledge, an installed
-  Image Analyzer, and 2 Byte upgrades. Start at home or the northern gateway.
+  Data Trials unlocks at 120 text knowledge and 40 image knowledge. Upgrades
+  help reach these goals but none are required. Start at home or the northern gateway.
   Swipe falling cards left for cats and right for dogs: four pictures, four words,
   four paragraphs. Pass with 10/12 overall and 3/4 in each category. Pictures get
   6 seconds, words 8, paragraphs 14. Missed deadlines count as mistakes; retries
   are free. Progress saves and the trial pauses when the page is hidden.
   Claiming the reward equips a travel vat and opens the Local Network for free.
   Previously unlocked saves keep their vat and access.
+  Deeper in Sandbox, a thick Full Book and framed 4K Image each carry 12 KB.
+  Their base downloads take 45/60 seconds and pay 120/160 processing points;
+  decoding upgrades shorten that time. Each retained file teaches one example,
+  like other data. They respawn after 45/55 seconds; 4K appears after images unlock.
   Local Network is friendly: Photo Library (cats/dogs), Shared Documents (text),
   and Developer Laptop (routing code). No boss or hallucinations in these chapters.
   Learn 6 cats and 6 dogs, then build Photo Sorter at home for 60 points.

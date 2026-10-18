@@ -307,7 +307,30 @@ export function createScene(canvas, state, content, exploration) {
     const g=new THREE.Group(), model=new THREE.Group();g.add(model);scene.add(g);
     const color=type==='text'?0xd8efa8:type==='image'?0xb9a5ef:0xf3b77f;
     const wings=[];
-    if(type==='text') {
+    if(profile==='full_book'){
+      // A chunky hardback, with page edges, binding and a hanging bookmark.
+      box(model,0xf0e3bc,0,.65,0,.7,.82,.26);
+      for(const z of [-.17,.17])box(model,0x477966,0,.65,z,.83,.94,.07);
+      box(model,0x315748,-.4,.65,0,.12,.94,.4);
+      for(const y of [.31,.95])box(model,0xe0ba70,-.4,y,.02,.13,.055,.41);
+      for(let i=0;i<6;i++)box(model,0xb9ad88,.356,.34+i*.12,0,.012,.015,.24);
+      box(model,0xd67e75,.2,.24,.21,.09,.34,.025);
+      box(model,0xd8efa8,0,.78,.214,.47,.3,.014);
+      for(const x of [-.1,.1])ball(model,0x283844,x,.79,.23,.027,.038,.022);
+      for(const x of [-.22,.22])ball(model,0x315748,x,.13,0,.1,.12,.12);
+    }else if(profile==='image_4k'){
+      // A wide gallery print: layered frame, landscape and four bright pixels.
+      box(model,0xd4bc7d,0,.67,0,1.12,.83,.18);
+      box(model,0x554975,0,.67,.1,1.02,.73,.04);
+      box(model,0x889dc0,0,.67,.13,.91,.61,.025);
+      ball(model,0xf8df96,.27,.83,.16,.09,.09,.02,.15);
+      for(const [x,y,r] of [[-.21,.5,.23],[.11,.49,.18]]){
+        const mountain=mesh(model,new THREE.ConeGeometry(r,.37,3),mat(0x667e92),x,y,.17);mountain.scale.z=.12;
+      }
+      for(let i=0;i<4;i++)box(model,0xdac8ff,-.19+i*.125,1.04,.12,.06,.045,.025,.35);
+      for(const x of [-.09,.09])ball(model,0x283844,x,.36,.16,.025,.03,.02);
+      for(const x of [-.32,.32])ball(model,0x554975,x,.18,0,.1,.1,.1);
+    }else if(type==='text') {
       const page=box(model,color,0,.45,0,.43,.48,.1);page.rotation.z=-.12;
       for(let i=0;i<3;i++)box(model,0x81966a,-.02,.53-i*.09,.061,.24-i*.03,.025,.01);
       for(const x of [-.13,.13])ball(model,0x476453,x,.21,0,.06,.13,.06);
@@ -330,10 +353,11 @@ export function createScene(canvas, state, content, exploration) {
       for(const side of [-1,1])tube(model,[[side*.34,.46,.08],[side*.22,.35,.15],[side*.34,.24,.08]],color,.045);
       for(const x of [-.09,.09])tube(model,[[x,.4,0],[x*1.5,.65,-.05]],color,.018);
     }
-    for(const x of [-.08,.08])ball(model,0x283844,x,type==='text'?.64:.56,.11,.025,.033,.025);
+    const large=profile==='full_book'||profile==='image_4k';
+    if(!large)for(const x of [-.08,.08])ball(model,0x283844,x,type==='text'?.64:.56,.11,.025,.033,.025);
     if(hard)torus(model,0xe7bbef,0,.1,0,.42,.018,.5);
     const tell=torus(g,0xff9dbb,0,.12,0,.52,.025,.65);tell.visible=false;
-    const shadow=mesh(g,new THREE.CircleGeometry(.35,16),new THREE.MeshBasicMaterial({color:0x071b24,transparent:true,opacity:.2}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.035;
+    const shadow=mesh(g,new THREE.CircleGeometry(large?.75:.35,16),new THREE.MeshBasicMaterial({color:0x071b24,transparent:true,opacity:.2}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.035;
     return {group:g,model,wings,tell};
   }
   function malware(){

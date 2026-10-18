@@ -42,7 +42,7 @@ test('routes clear folders and all training outlets for both brain and largest v
     const start={x:0,z:3};
     // The north approach to the drop-off pad stays clear of base machinery.
     checkPath({x:-3,z:-5},[{x:-3,z:5}],boxes,radius);
-    for(const goal of [{x:-10,z:-2},...starter.areas[0].spawns.map(s=>({x:s.emitter.x,z:s.emitter.z+2.3}))]){
+    for(const goal of [{x:-10,z:-2},...starter.areas[0].spawns.map(s=>s.emitter?({x:s.emitter.x,z:s.emitter.z+2.3}):({x:(s.habitat.minX+s.habitat.maxX)/2,z:(s.habitat.minZ+s.habitat.maxZ)/2}))]){
       const end=checkPath(start,planPath(start,goal,layout,boxes,radius),boxes,radius);
       assert.equal(boxes.some(b=>overlapsCircle(end,b,radius)),false);
     }

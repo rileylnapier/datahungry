@@ -1,4 +1,4 @@
-import { CHAPTER, createSamples, createTrial, trialPassed, validProfile } from './chapter.js';
+import { CHAPTER, PROFILES, createSamples, createTrial, trialPassed, validProfile } from './chapter.js';
 import { BENCHMARK } from './benchmark.js';
 import { cleanExplored } from './exploration.js';
 import { clampZoom } from './zoom.js';
@@ -42,12 +42,13 @@ export const connections = s => Math.min(s.unlocked?10:4,1+s.levels.parallel);
 export const upgradeUnlocked = (s,id) => id==='parallel' ? s.total>=BALANCE.parallelTraining&&(s.unlocked||s.levels.parallel<3) : id==='clarity' ? false : id==='speed' ? s.unlocked : true;
 export const level = s => Object.values(s.levels).reduce((a, b) => a + b, 0);
 export const cost = (s, id) => Math.round(UPGRADES[id].base * BALANCE.upgradeGrowth ** s.levels[id]);
-export function packetStats(type,size=TYPES[type]?.size){
-  const base=TYPES[type];if(!base||!Number.isInteger(size)||size<1||size>12)return null;
+export function packetStats(type,size=TYPES[type]?.size,profile){
+  const base=TYPES[type];if(!base||!Number.isInteger(size)||size<1||size>12||!validProfile(type,profile,size))return null;
+  const special=PROFILES[profile];if(special?.size)return {...base,size,value:special.value,decode:special.decode,speed:special.speed};
   return {...base,size,value:Math.round(base.value*size/base.size),decode:base.decode*size/base.size};
 }
 export function collect(s, type, rich = false, size=TYPES[type]?.size,profile) {
-  const t = packetStats(type,size);
+  const t = packetStats(type,size,profile);
   if (!t || !validProfile(type,profile) || used(s) + t.size > capacity(s)) return false;
   s.cargo.push({ type, size: t.size, value: t.value * (rich ? 2 : 1),...(profile?{profile}:{} ) });
   s.collected++;

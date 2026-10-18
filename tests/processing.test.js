@@ -173,7 +173,7 @@ test('specialist also pays points without teaching when library is full',()=>{
 });
 
 test('full libraries do not advance cat/dog unlocks; expansion resumes them',()=>{
-  let s=createState({unlocked:true,points:100,knowledge:{text:60,image:12},base:{imageMuncher:true},samples:{cat:5,dog:6}});
+  let s=createState({unlocked:true,network:{libraryGranted:true},points:100,knowledge:{text:60,image:12},base:{imageMuncher:true},samples:{cat:5,dog:6}});
   collect(s,'image',false,2,'cat');bank(s);processBase(s,1);
   assert.equal(s.samples.cat,5);assert.equal(s.knowledge.image,12);assert.equal(s.points,108);
   assert.equal(upgradeStorage(s,'image'),true);

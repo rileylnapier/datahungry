@@ -1,3 +1,5 @@
+import {networkWalls} from './network-layout.js';
+import {agentLoad,AGENT_CAPACITY} from './agents.js';
 import * as THREE from '../vendor/three/three.module.js';
 import {createEnvironmentArt,hardwareGeometry} from './environment-art.js';
 import {createSurfaceTexture} from './board-surfaces.js';
@@ -14,7 +16,7 @@ import { createWorldFog } from './world-fog.js';
 import { clampZoom } from './zoom.js';
 import { createDownloadCable } from './download-cable.js';
 import { picturesUnlocked, feedAvailable, storageUsed, storageCapacity } from './processing.js';
-import { worldLayout, FOLDERS, MEMORY_MODULES, PROCESSOR, serverTowers, BASE_MACHINES, BASE_STORAGE, BASE_SORTER, NETWORK_DEVICES, DOCK_PILLARS } from './world-layout.js';
+import { worldLayout, FOLDERS, MEMORY_MODULES, PROCESSOR, serverTowers, BASE_MACHINES, BASE_STORAGE, BASE_SORTER, NETWORK_DEVICES,NETWORK_ROUTER, DOCK_PILLARS } from './world-layout.js';
 
 const materials = new Map();
 let fogMaterial=()=>{};
@@ -51,12 +53,24 @@ export function createScene(canvas, state, content, exploration) {
   let zoomTarget=clampZoom(state.zoom),fogInitialized=false;camera.zoom=zoomTarget;
   function setZoom(value){zoomTarget=clampZoom(value);return zoomTarget;}
   const focus=new THREE.Vector3(0,0,1);const raycaster=new THREE.Raycaster();
-  const ground=mesh(scene,new THREE.PlaneGeometry(110,110),mat(0x1a383d));ground.rotation.x=-Math.PI/2;ground.position.y=-.12;ground.receiveShadow=true;
+  const ground=mesh(scene,new THREE.PlaneGeometry(layout.maxX-layout.minX+20,layout.maxZ-layout.minZ+20),mat(0x1a383d));ground.rotation.x=-Math.PI/2;ground.position.set(0,-.12,(layout.minZ+layout.maxZ)/2);ground.receiveShadow=true;
   // Keep the backdrop below both substrates: the Local Network top is y=0.
   // Coplanar surfaces fight for depth and flicker as the camera moves.
   // Distinct board substrates; surface detail is batched by the art layer.
   box(scene,0x1b2941,0,-.1,(hard.minZ+hard.maxZ)/2,hard.maxX-hard.minX+8,.2,hard.maxZ-hard.minZ+5);
   const environmentArt=createEnvironmentArt(scene,layout,content,worldFog.apply);
+  const walls=networkWalls(content),wallBatch=new THREE.InstancedMesh(cubeGeo,mat(0x152733),walls.length),wallTransform=new THREE.Object3D();
+  walls.forEach((b,i)=>{wallTransform.position.set((b.minX+b.maxX)/2,.45,(b.minZ+b.maxZ)/2);wallTransform.scale.set(b.maxX-b.minX,.9,b.maxZ-b.minZ);wallTransform.updateMatrix();wallBatch.setMatrixAt(i,wallTransform.matrix);});
+  wallBatch.receiveShadow=true;wallBatch.castShadow=true;wallBatch.computeBoundingSphere();scene.add(wallBatch);
+  for(const d of content.areas[1].districts||[]){
+    const b=d.bounds,color=Number(d.color.replace('#','0x'));
+    for(const x of [b.minX+.15,b.maxX-.15])box(scene,color,x,.09,(b.minZ+b.maxZ)/2,.08,.045,b.maxZ-b.minZ-.3,.35);
+    for(const z of [b.minZ+.15,b.maxZ-.15])box(scene,color,(b.minX+b.maxX)/2,.09,z,b.maxX-b.minX-.3,.045,.08,.35);
+    if(!d.safe)for(let i=0;i<5;i++)box(scene,0xf58b82,(b.minX+b.maxX)/2-2+i,.12,b.maxZ-.7,.5,.07,.5,.4);
+  }
+  const router=new THREE.Group();scene.add(router);router.position.set(NETWORK_ROUTER.x,0,NETWORK_ROUTER.z);
+  box(router,0x506f7d,0,.5,0,3,1,1.8);for(const x of [-1,1]){cylinder(router,0x82cbd5,x,1.5,0,.07,1.6);ball(router,0xb8ffe0,x,2.3,0,.12,.12,.12,.5);}
+  for(let i=0;i<5;i++)box(router,0xb8ffe0,-.8+i*.4,.5,.92,.12,.12,.03,.6);
   // The starter habitat is a contained virtual sandbox on a computer board.
   const boardCenter=(safe.minZ+safe.maxZ)/2,boardDepth=safe.maxZ-safe.minZ+7;
   box(scene,0x24453f,0,-.18,boardCenter,safe.maxX-safe.minX+6,.3,boardDepth);
@@ -117,6 +131,25 @@ export function createScene(canvas, state, content, exploration) {
   }
   function pulseEmitter(id){const emitter=emitterRings.get(id);if(emitter)emitter.remaining=.45;}
   // Familiar devices make this a small local network, with wired routes between them.
+  const agentViews={};
+  for(const id of ['courier','harvester']){
+    const color=id==='courier'?0x89e7d5:0xb9a5ef,g=new THREE.Group();scene.add(g);
+    ball(g,color,0,.65,0,.3,.3,.3);box(g,0x223f50,0,.65,.26,.4,.18,.07);
+    for(const x of [-.1,.1])ball(g,0xe6fff0,x,.67,.31,.035);
+    if(id==='courier'){
+      const pod=box(g,0xb5efe0,0,.55,-.32,.65,.65,.5);pod.material=pod.material.clone();pod.material.transparent=true;pod.material.opacity=.28;pod.material.depthWrite=false;
+      for(const x of [-.3,.3])box(g,0x41656b,x,.55,-.32,.055,.65,.5);
+    }else{
+      box(g,0x29494f,0,.45,-.29,.45,.4,.3);
+      const nozzle=mesh(g,new THREE.CylinderGeometry(.15,.11,.35,12),mat(color),0,.43,.42);nozzle.rotation.x=Math.PI/2;
+      const rim=mesh(g,new THREE.TorusGeometry(.15,.035,6,16),mat(0xe6efdc),0,.43,.6);
+      mesh(g,new THREE.CircleGeometry(.12,16),mat(0x142632),0,.43,.605);
+    }
+    const pack=box(g,color,0,.45,-.46,.4,.02,.03,.5);
+    for(const x of [-.34,.34])torus(g,color,x,.36,0,.16,.035,.3);
+    const beam=box(scene,color,0,.7,0,.045,.045,1,.7);beam.visible=false;
+    agentViews[id]={group:g,pack,beam};
+  }
   const deviceLights={};
   for(const [id,pos] of Object.entries(NETWORK_DEVICES)){
     const g=new THREE.Group();g.position.set(pos.x,0,pos.z);scene.add(g);
@@ -381,6 +414,12 @@ export function createScene(canvas, state, content, exploration) {
   function project(pos){const p=pos.clone().project(camera);return {x:(p.x*.5+.5)*viewport.width,y:(-.5*p.y+.5)*viewport.height,visible:p.z<1&&Math.abs(p.x)<1.1&&Math.abs(p.y)<1.1};}
   function worldPoint(x,y){const rect=canvas.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((x-rect.left)/rect.width*2-1,-(y-rect.top)/rect.height*2+1),camera);return raycaster.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),new THREE.Vector3());}
   function draw(player, targets, dt, time, destination){
+    for(const [id,v] of Object.entries(agentViews)){
+      const a=state.agents[id];v.group.visible=state.programs[id];v.beam.visible=state.programs[id]&&!!a.targetPosition;
+      v.group.position.set(a.x,Math.sin(time*4+(id==='courier'?0:2))*.06,a.z);v.group.rotation.y=a.heading||0;
+      v.pack.scale.y=Math.max(.02,agentLoad(a)/AGENT_CAPACITY[id]*.4);
+      if(v.beam.visible){const t=a.targetPosition;v.beam.position.set((a.x+t.x)/2,.7,(a.z+t.z)/2);v.beam.scale.z=Math.hypot(a.x-t.x,a.z-t.z);v.beam.rotation.y=Math.atan2(t.x-a.x,t.z-a.z);}
+    }
     worldFog.update();
     environmentArt.update(time);
     if(!fogInitialized){scene.traverse(object=>{if(object.material)for(const material of Array.isArray(object.material)?object.material:[object.material])if(!material.isSpriteMaterial)worldFog.apply(material);});fogInitialized=true;}

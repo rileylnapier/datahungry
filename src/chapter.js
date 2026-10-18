@@ -1,7 +1,7 @@
 import {BENCHMARK,restoreBenchmark,newBenchmark,benchmarkScore} from './benchmark.js';
 // Local-network learning goals compose existing collection and processing systems.
 export const CHAPTER={sandboxText:120,sandboxImages:60,trialText:6,trialImages:4,photoGoal:6,codeGoal:8,photoCost:60,autoSortCost:80};
-export const PROFILES={cat:{type:'image',name:'Cat photo'},dog:{type:'image',name:'Dog photo'},routing:{type:'code',name:'Routing snippet'},full_book:{type:'text',name:'Full Book',size:12,decode:45,value:120,speed:.14,scale:1.45,respawn:45},image_4k:{type:'image',name:'4K Image',size:12,decode:60,value:160,speed:.18,scale:1.5,respawn:55}};
+export const PROFILES={article:{type:'text',name:'Long article'},script:{type:'code',name:'Utility script'},corrupt_text:{type:'text',name:'Corrupted document',corrupt:true},corrupt_code:{type:'code',name:'Corrupted archive',corrupt:true},cleaned:{type:'code',name:'Cleaned code'},cat:{type:'image',name:'Cat photo'},dog:{type:'image',name:'Dog photo'},routing:{type:'code',name:'Routing snippet'},full_book:{type:'text',name:'Full Book',size:12,decode:45,value:120,speed:.14,scale:1.45,respawn:45},image_4k:{type:'image',name:'4K Image',size:12,decode:60,value:160,speed:.18,scale:1.5,respawn:55}};
 export const validProfile=(type,profile,size)=>profile===undefined||(PROFILES[profile]?.type===type&&(!PROFILES[profile].size||size===undefined||size===PROFILES[profile].size));
 const count=v=>Number.isInteger(v)?Math.max(0,Math.min(1000000,v)):0;
 export const createSamples=saved=>Object.fromEntries(Object.keys(PROFILES).map(id=>[id,count(saved?.[id])]));

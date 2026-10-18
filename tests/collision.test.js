@@ -46,7 +46,7 @@ test('routes clear folders and all training outlets for both brain and largest v
       const end=checkPath(start,planPath(start,goal,layout,boxes,radius),boxes,radius);
       assert.equal(boxes.some(b=>overlapsCircle(end,b,radius)),false);
     }
-    let from={x:17,z:layout.gateZ-8};
+    let from={x:24,z:-48};
     for(const goal of routeThroughGate(from,{x:-3,z:5},layout.gateZ))from=checkPath(from,planPath(from,goal,layout,boxes,radius),boxes,radius);
     assert.deepEqual(from,{x:-3,z:5});
   }

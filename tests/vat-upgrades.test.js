@@ -8,11 +8,11 @@ test('equipping the vat opens higher Byte and base tiers without resetting purch
   for(const id of ['capacity','range','decode','parallel'])assert.equal(buy(s,id),false);
   assert.equal(upgradeAnalyzer(s),false);
   const points=s.points;assert.equal(unlock(s),true);assert.equal(s.points,points);
-  assert.equal(capacity(s),42);assert.equal(storageCapacity(s,'text'),96);assert.equal(analyzerRate(s),2.5);
+  assert.equal(capacity(s),42);assert.equal(storageCapacity(s,'text'),144);assert.equal(analyzerRate(s),2.5);
   for(const id of ['capacity','range','decode','parallel'])while(s.levels[id]<maxLevel(id,s))assert.equal(buy(s,id),true);
   for(const type of ['text','image'])for(let i=0;i<3;i++)assert.equal(upgradeStorage(s,type),true);
   for(let i=0;i<3;i++)assert.equal(upgradeAnalyzer(s),true);
-  assert.equal(capacity(s),60);assert.equal(storageCapacity(s,'image'),168);assert.equal(analyzerRate(s),4);
+  assert.equal(capacity(s),60);assert.equal(storageCapacity(s,'image'),264);assert.equal(analyzerRate(s),4);
   assert.equal(upgradeAnalyzer(s),false);assert.equal(buy(s,'capacity'),false);
   const restored=readSave({getItem:()=>serialize(s)});
   assert.deepEqual(restored.levels,s.levels);assert.deepEqual(restored.base,s.base);assert.equal(restored.points,s.points);

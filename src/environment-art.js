@@ -78,6 +78,11 @@ export function createEnvironmentArt(scene,layout,content,applyMaterial){
       }
     }
   }
+  // Visible traces lead through the network's branching corridors.
+  for(const c of content.areas[1].corridors||[]){
+    const x=(c.minX+c.maxX)/2,z=(c.minZ+c.maxZ)/2;
+    circuit(c.maxX-c.minX>c.maxZ-c.minZ?[[c.minX,z],[c.maxX,z]]:[[x,c.minZ],[x,c.maxZ]],colors.image);
+  }
   // Layered stepping plates: inset seats, metal edges and brushed faces.
   for(let i=0;i<(layout.maxZ-layout.minZ)/1.25;i++){
     const z=layout.maxZ-i*1.25,x=Math.sin(z*.22)*1.5,angle=Math.sin(z*.22)*.13;

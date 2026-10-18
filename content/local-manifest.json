@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": 15,
+  "contentVersion": 16,
   "minimumAppVersion": "0.1.0",
   "channel": "development",
   "disabled": false,
@@ -180,65 +180,311 @@
       "zone": 1,
       "name": "Local Network",
       "bounds": {
-        "minX": -18,
-        "maxX": 18,
-        "minZ": -60,
+        "minX": -36,
+        "maxX": 36,
+        "minZ": -112,
         "maxZ": -35
       },
       "spawns": [
         {
           "creature": "image",
-          "count": 6,
-          "packetSize": 2,
-          "profile": "cat",
+          "count": 5,
+          "packetSize": 6,
           "habitat": {
-            "minX": -13,
-            "maxX": -7,
-            "minZ": -46,
-            "maxZ": -37
-          }
+            "minX": -31,
+            "maxX": -25,
+            "minZ": -54,
+            "maxZ": -43
+          },
+          "profile": "cat"
         },
         {
           "creature": "image",
-          "count": 6,
-          "packetSize": 2,
-          "profile": "dog",
+          "count": 5,
+          "packetSize": 6,
           "habitat": {
-            "minX": -6,
-            "maxX": -1,
-            "minZ": -46,
-            "maxZ": -37
+            "minX": -23,
+            "maxX": -17,
+            "minZ": -54,
+            "maxZ": -43
+          },
+          "profile": "dog"
+        },
+        {
+          "creature": "text",
+          "count": 6,
+          "packetSize": 3,
+          "habitat": {
+            "minX": 17,
+            "maxX": 24,
+            "minZ": -54,
+            "maxZ": -42
           }
         },
         {
           "creature": "text",
-          "count": 8,
-          "packetSize": 3,
+          "count": 3,
+          "packetSize": 6,
           "habitat": {
-            "minX": 5,
-            "maxX": 13,
-            "minZ": -46,
-            "maxZ": -37
-          }
+            "minX": 25,
+            "maxX": 31,
+            "minZ": -54,
+            "maxZ": -43
+          },
+          "profile": "article"
         },
         {
           "creature": "code",
-          "count": 8,
+          "count": 6,
           "packetSize": 3,
-          "profile": "routing",
+          "habitat": {
+            "minX": -8,
+            "maxX": -2,
+            "minZ": -77,
+            "maxZ": -67
+          },
+          "profile": "routing"
+        },
+        {
+          "creature": "code",
+          "count": 3,
+          "packetSize": 6,
+          "habitat": {
+            "minX": 2,
+            "maxX": 8,
+            "minZ": -77,
+            "maxZ": -67
+          },
+          "profile": "script"
+        },
+        {
+          "creature": "image",
+          "count": 3,
+          "packetSize": 8,
+          "habitat": {
+            "minX": 17,
+            "maxX": 23,
+            "minZ": -82,
+            "maxZ": -70
+          },
+          "profile": "cat"
+        },
+        {
+          "creature": "image",
+          "count": 3,
+          "packetSize": 8,
+          "habitat": {
+            "minX": 25,
+            "maxX": 31,
+            "minZ": -82,
+            "maxZ": -70
+          },
+          "profile": "dog"
+        },
+        {
+          "creature": "image",
+          "count": 1,
+          "packetSize": 12,
+          "habitat": {
+            "minX": 22,
+            "maxX": 27,
+            "minZ": -84,
+            "maxZ": -80
+          },
+          "profile": "image_4k"
+        },
+        {
+          "creature": "text",
+          "count": 4,
+          "packetSize": 4,
+          "habitat": {
+            "minX": -30,
+            "maxX": -18,
+            "minZ": -87,
+            "maxZ": -74
+          },
+          "profile": "corrupt_text"
+        },
+        {
+          "creature": "code",
+          "count": 3,
+          "packetSize": 8,
+          "habitat": {
+            "minX": -9,
+            "maxX": 9,
+            "minZ": -107,
+            "maxZ": -98
+          },
+          "profile": "corrupt_code"
+        },
+        {
+          "creature": "text",
+          "count": 3,
+          "packetSize": 1,
           "habitat": {
             "minX": -2,
-            "maxX": 8,
+            "maxX": 2,
+            "minZ": -60,
+            "maxZ": -55
+          }
+        },
+        {
+          "creature": "text",
+          "count": 1,
+          "packetSize": 12,
+          "habitat": {
+            "minX": 25,
+            "maxX": 30,
             "minZ": -56,
-            "maxZ": -49
+            "maxZ": -53
+          },
+          "profile": "full_book"
+        }
+      ],
+      "hostiles": [
+        {
+          "enemy": "malware",
+          "count": 3,
+          "habitat": {
+            "minX": -31,
+            "maxX": -17,
+            "minZ": -88,
+            "maxZ": -73
+          }
+        },
+        {
+          "enemy": "malware",
+          "count": 3,
+          "habitat": {
+            "minX": -9,
+            "maxX": 9,
+            "minZ": -108,
+            "maxZ": -98
           }
         }
       ],
-      "hostiles": [],
       "hallucinations": {
         "behavior": "mimic",
         "count": 0
-      }
+      },
+      "districts": [
+        {
+          "id": "router",
+          "name": "Router Hub",
+          "bounds": {
+            "minX": -9,
+            "maxX": 9,
+            "minZ": -52,
+            "maxZ": -35
+          },
+          "color": "#86cdd5",
+          "safe": true
+        },
+        {
+          "id": "photos",
+          "name": "Family Photo Library",
+          "bounds": {
+            "minX": -33,
+            "maxX": -15,
+            "minZ": -57,
+            "maxZ": -39
+          },
+          "color": "#b9a5ef",
+          "safe": true
+        },
+        {
+          "id": "documents",
+          "name": "Shared Documents",
+          "bounds": {
+            "minX": 15,
+            "maxX": 33,
+            "minZ": -57,
+            "maxZ": -39
+          },
+          "color": "#d8efa8",
+          "safe": true
+        },
+        {
+          "id": "developer",
+          "name": "Developer Workstation",
+          "bounds": {
+            "minX": -11,
+            "maxX": 11,
+            "minZ": -80,
+            "maxZ": -64
+          },
+          "color": "#f3b77f",
+          "safe": true
+        },
+        {
+          "id": "archive",
+          "name": "Photo Archive",
+          "bounds": {
+            "minX": 15,
+            "maxX": 33,
+            "minZ": -86,
+            "maxZ": -66
+          },
+          "color": "#92aaf4",
+          "safe": true
+        },
+        {
+          "id": "infected",
+          "name": "Infected Computer",
+          "bounds": {
+            "minX": -33,
+            "maxX": -15,
+            "minZ": -91,
+            "maxZ": -70
+          },
+          "color": "#ef8b91",
+          "safe": false
+        },
+        {
+          "id": "backup",
+          "name": "Corrupted Backup",
+          "bounds": {
+            "minX": -12,
+            "maxX": 12,
+            "minZ": -110,
+            "maxZ": -95
+          },
+          "color": "#e3a273",
+          "safe": false
+        }
+      ],
+      "corridors": [
+        {
+          "minX": -17,
+          "maxX": -7,
+          "minZ": -50,
+          "maxZ": -42
+        },
+        {
+          "minX": 7,
+          "maxX": 17,
+          "minZ": -50,
+          "maxZ": -42
+        },
+        {
+          "minX": -4,
+          "maxX": 4,
+          "minZ": -98,
+          "maxZ": -48
+        },
+        {
+          "minX": -17,
+          "maxX": -9,
+          "minZ": -79,
+          "maxZ": -71
+        },
+        {
+          "minX": 9,
+          "maxX": 17,
+          "minZ": -77,
+          "maxZ": -69
+        }
+      ]
     }
   ],
   "enemies": {

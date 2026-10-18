@@ -1,5 +1,15 @@
 DATA HUNGRY — PLAYABLE THREE.JS PROTOTYPE
 
+Debug / chapter testing
+  Pause > Debug tools offers Fresh sandbox, Start Local Network, and Test all
+  network tools. Each replaces only the test save, identified by ?debug=1 and a
+  TEST SAVE badge. Return to normal save in that menu leaves normal progress intact.
+  Network start: vat, four hoses, level-5 capacity/range/decoding, level-3 analysis,
+  Image Analyzer, 120 text + 60 image knowledge, expanded libraries, 250 points.
+  Network recipes remain unbuilt. All-tools additionally grants both helpers,
+  shield/cleaner, Photo Sorter/Auto Sort, 24 code knowledge and 1,000 points; rooms
+  are revealed for testing. Debug runs and restart backups have their own namespace.
+
 Run
   npm run dev      http://localhost:5173 (also binds to the LAN for phone testing)
   npm test         progression, saving, hallucinations, content validation/fallback
@@ -61,7 +71,7 @@ Play
   Until then, image and code feeds stay dormant. Build the Image Analyzer for
   80 points to process stored pictures at 0.5 seconds per KB, alongside text.
   The Starter Analyzer processes pictures even before the specialist is built. Code feeds are
-  activated after building Photo Sorter and visiting the Developer Laptop; existing code queues still process safely.
+  activated after building Photo Sorter and visiting the Developer Workstation; existing code queues still process safely.
   Processing continues in home/map menus, pauses with Pause or a hidden/closed
   game, and saves unfinished jobs. There is no offline catch-up in this prototype.
   Older saves retain Byte upgrades, points and queued data; a previously purchased
@@ -94,14 +104,37 @@ Play
   Their base downloads take 45/60 seconds and pay 120/160 processing points;
   decoding upgrades shorten that time. Each retained file teaches one example,
   like other data. They respawn after 45/55 seconds; 4K appears after images unlock.
-  Local Network is friendly: Photo Library (cats/dogs), Shared Documents (text),
-  and Developer Laptop (routing code). No boss or hallucinations in these chapters.
+  Local Network now branches across seven rooms: Router Hub, Family Photo Library,
+  Shared Documents, Developer Workstation, Photo Archive, Infected Computer and
+  Corrupted Backup. Rooms and corridors are defined in the local manifest; the
+  rendered walls and collision obstacles come from the same geometry. The central
+  path stays clear of the router and laptop, including at maximum vat size.
+  The first rooms are safe; malware stays within the two marked danger rooms.
+  Regular cat/dog photos are 6 KB, archive photos 8 KB, articles/scripts 6 KB.
+  The archive also holds a 12 KB 4K image; documents include a full book.
+  Earning the vat grants an extra 48 KB text / 96 KB image library space once,
+  including for existing vat saves. This leaves room for the first network goals.
+  There is no boss or hallucination minigame in this chapter.
   Learn 6 cats and 6 dogs, then build Photo Sorter at home for 60 points.
   New image jobs run twice as fast. Visit the laptop to activate routing snippets.
   Learn 8 routing snippets, then build Auto Sort for 80 points: a second text/code
   worker appears at home. Both handlers are fixed recipes, not generated code.
   Ordinary code knowledge does not count as routing samples. Samples are learned
   only when analysis completes; queued profile identities survive reload.
+  Network workshop (Home > Build home) unlocks four fixed programs using code:
+    Courier Agent: 6 code knowledge + 90 points. Call from the HUD; picks up at most
+      24 KB, leaves noise with Byte, carries real files home for normal analysis.
+    Malware Shield: 8 code knowledge + 100 points. Reduces damage by 60% and skips
+      corrupted files until a cleaner is installed. Home heals and purges noise.
+    Collector Agent: 14 code knowledge + 180 points, requires courier. Assign a
+      discovered safe room at home. Downloads up to 18 KB then carries it home.
+      Stop/reassign while carrying data returns that cargo first. One of each agent.
+    Malware Cleaner: 16 code knowledge + 180 points, requires shield. Byte's hoses
+      turn malware into 6 KB of code and clean corrupted files into useful code.
+  Knowledge is never spent. Agents use visible floating robot placeholders with
+  distinct silhouettes: mint courier cargo pod, lavender collector suction nozzle.
+  Agent cargo and assignments save; deliveries award points/knowledge only through
+  the base analyzers. Agents pause with the game and do not work while it is closed.
   Open Web is a future chapter, marked by an inactive uplink.
   Defeat removes roughly half the unbanked haul and returns Byte to the dock.
   Banked progress, upgrades, and passed benchmarks save on this device.

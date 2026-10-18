@@ -86,7 +86,7 @@ test('chapter validation rejects invalid profiles and balance; legacy unlock rem
   assert.equal(s.unlocked,true);assert.equal(s.samples.routing,0);
   assert.equal(collect(s,'text',false,1,'cat'),false);
   assert.equal(s.cargo.length,0);assert.equal(starter.bosses[0].enabled,false);
-  assert.equal(starter.areas[1].hallucinations.count,0);assert.equal(starter.areas[1].hostiles.length,0);
+  assert.equal(starter.areas[1].hallucinations.count,0);assert.equal(starter.areas[1].hostiles.length,2);
 });
 
  test('vat trial gate uses both knowledge goals, regardless of points or purchased upgrades',()=>{

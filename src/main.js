@@ -255,6 +255,8 @@ function updateUI(){
   $('mood').textContent=noise(state)>0?'is confidently wrong.':state.health<40?'is mildly concerned.':load>=cap?'has a full brain.':load>0?'is thinking.':'is curious.';
   $('dock-action').hidden=Math.hypot(player.x+3,player.z-5)>2.1;
   $('dock-action').innerHTML='Build & upgrade at home <span>↗</span>';
+  $('image-legend').hidden=!picturesUnlocked(state);
+  $('image-kb').parentElement.hidden=!picturesUnlocked(state)&&!state.cargo.some(item=>item.type==='image');
   $('code-legend').hidden=!codeAvailable(state);
   $('code-kb').parentElement.hidden=!codeAvailable(state)&&!state.cargo.some(item=>item.type==='code');
   for(const type of Object.keys(dataNames))$(type+'-kb').textContent=state.cargo.filter(c=>c.type===type).reduce((sum,c)=>sum+c.size,0)+' KB';

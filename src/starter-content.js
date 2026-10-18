@@ -1,7 +1,7 @@
 // Generated from content/local-manifest.json by scripts/build.mjs.
 export default {
   "schemaVersion": 1,
-  "contentVersion": 10,
+  "contentVersion": 11,
   "minimumAppVersion": "0.1.0",
   "channel": "development",
   "disabled": false,
@@ -123,7 +123,7 @@ export default {
             "z": -7,
             "interval": 1.8,
             "id": "snapshots",
-            "name": "Snapshot pipe"
+            "name": "Low-res image pipe"
           },
           "packetSize": 2
         },
@@ -139,7 +139,7 @@ export default {
           },
           "emitter": {
             "id": "bundles",
-            "name": "Image bundle pipe",
+            "name": "High-res image pipe",
             "x": 12,
             "z": -14,
             "interval": 3

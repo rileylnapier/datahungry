@@ -9,3 +9,6 @@ tmp/
 .env.*
 !.env.example
 *.blend[0-9]
+
+# Local performance logs
+.diagnostics/

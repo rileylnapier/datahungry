@@ -18,8 +18,8 @@ Play
   Explore to clear fog; discovered terrain and landmarks stay revealed and save.
   The map hides undiscovered feeds but guides you to the first Word pipe.
   Begin as a small exposed brain in a large sandbox inside a local computer.
-  Five pipes emit safe data: Words (1 KB), Paragraphs (3 KB), Snapshots (2 KB),
-  Image bundles (4 KB), and Code (3 KB, unlocked later). Bigger packets are visibly
+  Five pipes emit safe data: Words (1 KB), Paragraphs (3 KB), Low-res images (2 KB),
+  High-res images (4 KB), and Code (3 KB, unlocked later). Bigger packets are visibly
   larger, take more carrying space and download/analysis time, and pay more points.
   Each packet still teaches one example. Emission cadence, sizes and locations live in JSON;
   inactive creatures are recycled so the population stays bounded. Use the
@@ -187,3 +187,17 @@ Performance diagnostics
   with device/browser information, zone, hose count, queue and render settings.
   For a deeper trace, use the browser developer tools Performance recorder for the
   same route. Compare frame spikes with scripting, layout, rendering and GC work.
+
+Local performance logging
+  npm run dev now enables local logging automatically after a page refresh.
+  The overlay can remain hidden. Once per second it records a rolling frame
+  summary; spikes over 50 ms (up to three per second), long tasks, runtime errors,
+  visibility changes, and diagnostic settings are also recorded. Requests batch
+  every five seconds, with a bounded buffer and backoff if the server is offline.
+  Pause > Show performance monitor > Mark lag adds a timestamp for a felt hitch.
+  Pause logging stops uploads; Save report still offers the manual JSON download.
+  Logs: .diagnostics/performance.jsonl, plus .1 and .2 rotated backups (about 2 MB
+  each). Logs are ignored by Git and cannot be fetched through the static server.
+  npm run perf:summary prints the latest session, slow frames, errors and markers.
+  Diagnostic fields include browser/device info and game context, never saved-game
+  payloads or inventory. Preview/build hosting does not enable the write endpoint.

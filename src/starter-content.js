@@ -1,7 +1,7 @@
 // Generated from content/local-manifest.json by scripts/build.mjs.
 export default {
   "schemaVersion": 1,
-  "contentVersion": 14,
+  "contentVersion": 15,
   "minimumAppVersion": "0.1.0",
   "channel": "development",
   "disabled": false,
@@ -296,7 +296,7 @@ export default {
   },
   "chapter": {
     "sandboxText": 120,
-    "sandboxImages": 40,
+    "sandboxImages": 60,
     "trialText": 6,
     "trialImages": 4,
     "photoGoal": 6,

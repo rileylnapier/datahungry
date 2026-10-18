@@ -36,6 +36,14 @@ test('benchmark requires every category, offers free retries, and preserves best
   let missed=new Set();for(const id of s.trial.deck){const c=benchmarkCard(id),wrong=c.kind!=='paragraph'&&!missed.has(c.kind);if(wrong)missed.add(c.kind);answerBenchmark(s,id,wrong?(c.answer==='cat'?'dog':'cat'):c.answer);}
   assert.equal(benchmarkScore(s.trial).correct,10);assert.equal(trialPassed(s),true);
 });
+test('players who already entered the trial retain free retries after knowledge goals rise',()=>{
+  let s=ready();assert.equal(startTrial(s),true);
+  for(const id of s.trial.deck)answerBenchmark(s,id,benchmarkCard(id).answer==='cat'?'dog':'cat');
+  // Represents a saved attempt from the earlier 40-image goal.
+  s.knowledge.image=40;s=readSave({getItem:()=>serialize(s)});
+  assert.equal(sandboxReady(s),false);assert.equal(startTrial(s),true);
+  assert.equal(s.trial.answers.length,0);
+});
 test('malformed attempts reset safely; earned legacy rewards and unlocked saves survive',()=>{
   const s=ready();startTrial(s);const good=structuredClone(s.trial);
   for(const bad of [{...good,deck:['oops']},{...good,answers:['fox']},{...good,deck:Array(12).fill(good.deck[0])},{...good,answers:Array(13).fill('cat')}]){

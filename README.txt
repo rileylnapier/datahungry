@@ -80,7 +80,7 @@ Play
   Upgrade cards explain their effect and show the next improvement before purchase.
   Steering accelerates quickly and brakes with a short coast. Byte turns, leans,
   hops as a brain, rolls its wheels after evolving, and bounces on collection. The camera follows at a closer scale.
-  Data Trials unlocks at 120 text knowledge and 40 image knowledge. Upgrades
+  Data Trials unlocks at 120 text knowledge and 60 image knowledge. Upgrades
   help reach these goals but none are required. Start at home or the northern gateway.
   Swipe falling cards left for cats and right for dogs: four pictures, four words,
   four paragraphs. Pass with 10/12 overall and 3/4 in each category. Pictures get

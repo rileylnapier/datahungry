@@ -1,0 +1,6 @@
+{
+  "appId": "com.datahungry.game",
+  "appName": "Data Hungry",
+  "webDir": "dist",
+  "backgroundColor": "#101b25"
+}

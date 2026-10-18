@@ -1,0 +1,16 @@
+{
+  "name": "Sandbox Byte",
+  "sourceImage": "../concepts/byte-sandbox-v1.png",
+  "provider": "Meshy MCP",
+  "taskId": "01a14c55-cfd6-722d-bb7f-edc5be885cdb",
+  "model": "meshy-t2.5",
+  "modelType": "smart-topology",
+  "targetTriangles": 12000,
+  "actualTriangles": 12568,
+  "vertices": 8448,
+  "textureResolution": "2k",
+  "pbr": true,
+  "format": "glb",
+  "bytes": 5234044,
+  "credits": 15
+}

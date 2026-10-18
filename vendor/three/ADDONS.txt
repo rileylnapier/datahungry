@@ -1,0 +1,4 @@
+GLTFLoader.js and BufferGeometryUtils.js are from Three.js r180:
+https://github.com/mrdoob/three.js/tree/r180/examples/jsm
+MIT license: see LICENSE in this directory.
+Only the bare "three" import was changed to ../three.module.js for local bundling.

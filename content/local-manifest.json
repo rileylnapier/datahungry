@@ -1,0 +1,362 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": 10,
+  "minimumAppVersion": "0.1.0",
+  "channel": "development",
+  "disabled": false,
+  "balance": {
+    "startingCapacity": 12,
+    "capacityPerLevel": 6,
+    "startingRange": 2.15,
+    "rangePerLevel": 0.6,
+    "upgradeGrowth": 1.7,
+    "gateTraining": 120,
+    "gateUpgrades": 2,
+    "parallelTraining": 60,
+    "startingSpeed": 4.4,
+    "vatSpeedBonus": 0.1,
+    "speedPerLevel": 0.05
+  },
+  "creatures": {
+    "text": {
+      "behavior": "wander",
+      "size": 1,
+      "value": 3,
+      "decode": 0.75,
+      "speed": 0.48
+    },
+    "image": {
+      "behavior": "flutter",
+      "size": 2,
+      "value": 8,
+      "decode": 1.25,
+      "speed": 0.8
+    },
+    "code": {
+      "behavior": "skitter",
+      "size": 3,
+      "value": 15,
+      "decode": 1.8,
+      "speed": 1.15
+    }
+  },
+  "upgrades": {
+    "capacity": {
+      "base": 24
+    },
+    "range": {
+      "base": 30
+    },
+    "decode": {
+      "base": 36
+    },
+    "clarity": {
+      "base": 42
+    },
+    "parallel": {
+      "base": 60
+    },
+    "speed": {
+      "base": 60
+    }
+  },
+  "areas": [
+    {
+      "id": "localhost",
+      "zone": 0,
+      "name": "Sandbox",
+      "bounds": {
+        "minX": -18,
+        "maxX": 18,
+        "minZ": -29,
+        "maxZ": 14
+      },
+      "spawns": [
+        {
+          "creature": "text",
+          "count": 20,
+          "habitat": {
+            "minX": -14,
+            "maxX": -7,
+            "minZ": -11,
+            "maxZ": -5.5
+          },
+          "emitter": {
+            "x": -12,
+            "z": -8,
+            "interval": 1.5,
+            "id": "words",
+            "name": "Word pipe"
+          },
+          "packetSize": 1
+        },
+        {
+          "creature": "text",
+          "count": 16,
+          "packetSize": 3,
+          "habitat": {
+            "minX": -16,
+            "maxX": -10,
+            "minZ": -25,
+            "maxZ": -16
+          },
+          "emitter": {
+            "id": "paragraphs",
+            "name": "Paragraph pipe",
+            "x": -12,
+            "z": -21,
+            "interval": 2.5
+          }
+        },
+        {
+          "creature": "image",
+          "count": 16,
+          "habitat": {
+            "minX": 3,
+            "maxX": 16,
+            "minZ": -18,
+            "maxZ": 6
+          },
+          "emitter": {
+            "x": 6,
+            "z": -7,
+            "interval": 1.8,
+            "id": "snapshots",
+            "name": "Snapshot pipe"
+          },
+          "packetSize": 2
+        },
+        {
+          "creature": "image",
+          "count": 12,
+          "packetSize": 4,
+          "habitat": {
+            "minX": 6,
+            "maxX": 16,
+            "minZ": -17,
+            "maxZ": -10
+          },
+          "emitter": {
+            "id": "bundles",
+            "name": "Image bundle pipe",
+            "x": 12,
+            "z": -14,
+            "interval": 3
+          }
+        }
+      ],
+      "hostiles": [],
+      "hallucinations": {
+        "behavior": "mimic",
+        "count": 0
+      }
+    },
+    {
+      "id": "local_network",
+      "zone": 1,
+      "name": "Local Network",
+      "bounds": {
+        "minX": -18,
+        "maxX": 18,
+        "minZ": -60,
+        "maxZ": -35
+      },
+      "spawns": [
+        {
+          "creature": "image",
+          "count": 6,
+          "packetSize": 2,
+          "profile": "cat",
+          "habitat": {
+            "minX": -13,
+            "maxX": -7,
+            "minZ": -46,
+            "maxZ": -37
+          }
+        },
+        {
+          "creature": "image",
+          "count": 6,
+          "packetSize": 2,
+          "profile": "dog",
+          "habitat": {
+            "minX": -6,
+            "maxX": -1,
+            "minZ": -46,
+            "maxZ": -37
+          }
+        },
+        {
+          "creature": "text",
+          "count": 8,
+          "packetSize": 3,
+          "habitat": {
+            "minX": 5,
+            "maxX": 13,
+            "minZ": -46,
+            "maxZ": -37
+          }
+        },
+        {
+          "creature": "code",
+          "count": 8,
+          "packetSize": 3,
+          "profile": "routing",
+          "habitat": {
+            "minX": -2,
+            "maxX": 8,
+            "minZ": -56,
+            "maxZ": -49
+          }
+        }
+      ],
+      "hostiles": [],
+      "hallucinations": {
+        "behavior": "mimic",
+        "count": 0
+      }
+    }
+  ],
+  "enemies": {
+    "malware": {
+      "behavior": "chase",
+      "speed": 1.3,
+      "detection": 5,
+      "damage": 14
+    }
+  },
+  "bosses": [
+    {
+      "id": "gatekeeper",
+      "name": "Stress Test",
+      "integrity": 80,
+      "damage": 22,
+      "decodeRate": 8,
+      "reward": 90,
+      "phases": [
+        {
+          "untilHealth": 0.45,
+          "behaviors": [
+            {
+              "type": "chase",
+              "speed": 0.8
+            }
+          ]
+        },
+        {
+          "untilHealth": 0,
+          "behaviors": [
+            {
+              "type": "chase",
+              "speed": 1.1
+            },
+            {
+              "type": "charge",
+              "speed": 5.5,
+              "duration": 0.6,
+              "interval": 3.8
+            }
+          ]
+        }
+      ],
+      "enabled": false
+    }
+  ],
+  "processing": {
+    "secondsPerKB": 1.5,
+    "imageSecondsPerKB": 0.5,
+    "imageMuncherCost": 80,
+    "textKnowledgeGoal": 60,
+    "analyzerSpeedCost": 24
+  },
+  "chapter": {
+    "sandboxText": 60,
+    "sandboxImages": 8,
+    "sandboxUpgrades": 2,
+    "trialText": 6,
+    "trialImages": 4,
+    "photoGoal": 6,
+    "codeGoal": 8,
+    "photoCost": 60,
+    "autoSortCost": 80
+  },
+  "benchmark": {
+    "id": "animal-recognition-v1",
+    "passScore": 10,
+    "minimumPerKind": 3,
+    "cards": [
+      {
+        "id": "cat-picture-1",
+        "kind": "picture",
+        "answer": "cat",
+        "variant": 0
+      },
+      {
+        "id": "dog-picture-1",
+        "kind": "picture",
+        "answer": "dog",
+        "variant": 0
+      },
+      {
+        "id": "cat-picture-2",
+        "kind": "picture",
+        "answer": "cat",
+        "variant": 1
+      },
+      {
+        "id": "dog-picture-2",
+        "kind": "picture",
+        "answer": "dog",
+        "variant": 1
+      },
+      {
+        "id": "cat-word-1",
+        "kind": "word",
+        "answer": "cat",
+        "text": "Meow"
+      },
+      {
+        "id": "dog-word-1",
+        "kind": "word",
+        "answer": "dog",
+        "text": "Bark"
+      },
+      {
+        "id": "cat-word-2",
+        "kind": "word",
+        "answer": "cat",
+        "text": "Kitten"
+      },
+      {
+        "id": "dog-word-2",
+        "kind": "word",
+        "answer": "dog",
+        "text": "Puppy"
+      },
+      {
+        "id": "cat-paragraph-1",
+        "kind": "paragraph",
+        "answer": "cat",
+        "text": "She curls up on the windowsill. When I stroke her soft fur, she purrs and gives a little meow."
+      },
+      {
+        "id": "dog-paragraph-1",
+        "kind": "paragraph",
+        "answer": "dog",
+        "text": "He waits by the door with his leash. Outside, he barks happily and fetches the ball I throw."
+      },
+      {
+        "id": "cat-paragraph-2",
+        "kind": "paragraph",
+        "answer": "cat",
+        "text": "The kitten spots a toy mouse. She pounces, then climbs onto my lap and starts to purr."
+      },
+      {
+        "id": "dog-paragraph-2",
+        "kind": "paragraph",
+        "answer": "dog",
+        "text": "The puppy trots beside me on our walk. He wags his tail and gives a friendly woof to another puppy."
+      }
+    ]
+  }
+}

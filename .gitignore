@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+
+# Local previews, credentials, and Blender backup files
+tmp/
+.env
+.env.*
+!.env.example
+*.blend[0-9]

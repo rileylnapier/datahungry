@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#142c32" />
+  <title>Asset library · Data Hungry</title>
+  <style>
+    :root { color-scheme: dark; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; color: #eef3e9; background: #102329; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: radial-gradient(ellipse at top left, #244b4b, transparent 65%); }
+    a { color: inherit; text-underline-offset: 4px; }
+    a:focus-visible { outline: 3px solid #d1f3a8; outline-offset: 5px; }
+    header, main, footer { max-width: 1320px; margin: auto; padding: 28px clamp(20px, 4vw, 64px); }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { font-weight: 800; letter-spacing: .12em; font-size: 14px; text-decoration: none; }
+    .brand span { color: #c4e9a4; }
+    .back { font-size: 15px; color: #c0d2cb; }
+    .eyebrow { color: #c4e9a4; font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { font-size: clamp(36px, 6vw, 64px); line-height: 1.05; letter-spacing: -.045em; margin: 14px 0 20px; }
+    .intro { color: #c0d2cb; font-size: 18px; line-height: 1.65; max-width: 660px; margin: 0; }
+    nav { display: flex; gap: 12px; flex-wrap: wrap; margin: 28px 0 40px; }
+    nav a, .actions a { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 16px; border: 1px solid #506560; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 650; }
+    nav a:hover, .actions a:hover { background: #36534d; border-color: #c4e9a4; }
+    section { scroll-margin-top: 24px; margin-bottom: 48px; }
+    .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+    h2 { font-size: 24px; letter-spacing: -.025em; margin: 0; }
+    .section-heading span { color: #a4bcb5; font-size: 14px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+    article { overflow: hidden; background: #1d353b; border: 1px solid #3b5355; border-radius: 18px; }
+    .preview { display: block; background: #d8dbd3; }
+    .preview img { display: block; width: 100%; height: auto; transition: opacity .15s; }
+    .preview:hover img { opacity: .92; }
+    .details { padding: 22px; }
+    .meta { color: #c4e9a4; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    h3 { margin: 10px 0; font-size: 22px; letter-spacing: -.02em; }
+    .details p { color: #bdcec8; font-size: 16px; line-height: 1.6; margin: 0 0 20px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .actions .primary { color: #20352d; background: #c4e9a4; border-color: #c4e9a4; }
+    .actions .primary:hover { background: #d9f6bd; }
+    footer { color: #a4bcb5; font-size: 14px; line-height: 1.7; padding-bottom: 48px; }
+    @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } .section-heading { align-items: start; flex-direction: column; gap: 8px; } header { padding-top: 22px; } }
+  </style>
+</head>
+<body>
+  <header><a class="brand" href="/">DATA HUNGRY<span> ●</span></a><a class="back" href="/">Back to game ↗</a></header>
+  <main>
+    <div class="eyebrow">The world of Byte · Art exploration 01</div>
+    <h1>A little world.<br>A hungry imagination.</h1>
+    <p class="intro">Character and environment concepts for Data Hungry. Explore the details, open an original, or download a reference for modeling.</p>
+    <nav aria-label="Asset categories"><a href="#motherboard">Current direction</a><a href="#vat-hardware">Modular vat</a><a href="/assets/byte.html">Byte in 3D ↗</a><a href="#environments">Earlier environments</a><a href="#characters">Byte references</a><a href="/assets/concepts/prompts.txt">Generation prompts ↗</a></nav>
+    <section id="motherboard" aria-labelledby="motherboard-title">
+      <div class="section-heading"><h2 id="motherboard-title">Inside a little computer</h2><span>Screenshot paintover · Richer materials, open play space</span></div>
+      <article><a class="preview" href="/assets/concepts/sandbox-motherboard-paintover-v4.png"><img src="/assets/concepts/sandbox-motherboard-paintover-v4.png" alt="Paintover of the sandbox with dimensional motherboard panels, cream equipment, mint and lavender signal paths, and spacious floor around Byte." /></a><div class="details"><h3>A more tangible sandbox</h3><p>Beveled panels, chips and neatly routed cables give the computer a physical identity. Detail sits around the edges while Byte and the return route stay clear. Design reference for the first in-game motherboard art pass, now implemented.</p><div class="actions"><a class="primary" href="/assets/concepts/sandbox-motherboard-paintover-v4.png">View paintover ↗</a><a href="/assets/concepts/sandbox-circuits-baseline-v3.png">Actual screenshot ↗</a><a href="/assets/concepts/sandbox-motherboard-paintover-v4-prompt.txt">Generation prompt ↗</a></div></div></article>
+    </section>
+    <section id="vat-hardware" aria-labelledby="vat-hardware-title">
+      <div class="section-heading"><h2 id="vat-hardware-title">Vat hardware for modeling</h2><span>Solid parts only · Glass and liquid added separately</span></div>
+      <article><a class="preview" href="/assets/concepts/byte-vat-hardware-v4.png"><img src="/assets/concepts/byte-vat-hardware-v4.png" width="1536" height="1024" alt="Cream and teal wheeled vat chassis with a separate lid and antenna, without glass, liquid, brain or hoses." /></a><div class="details"><h3>Build around the original Byte</h3><p>The Meshy hardware is now assembled in the game with the original blinking brain, a transparent chamber, near-full liquid and up to ten independently animated collectors.</p><div class="actions"><a class="primary" href="/assets/byte.html#vat">Try assembled Byte in 3D ↗</a><a href="/assets/models/byte-vat-v1.glb" download>Download hardware GLB ↓</a><a href="/assets/concepts/byte-vat-hardware-v4.png" download>Modeling reference ↓</a><a href="/assets/concepts/byte-vat-hardware-v4-prompt.txt">Generation prompt ↗</a></div></div></article>
+    </section>
+    <section id="circuits" aria-labelledby="circuits-title">
+      <div class="section-heading"><h2 id="circuits-title">A living circuit board</h2><span>Actual screenshot → lighting paintover</span></div>
+      <div class="grid">
+        <article><a class="preview" href="/assets/concepts/sandbox-circuits-baseline-v3.png"><img src="/assets/concepts/sandbox-circuits-baseline-v3.png" width="1696" height="1083" alt="Actual game screenshot used as the baseline for the circuit-lighting paintover." /></a><div class="details"><div class="meta">Before · Running game</div><h3>The current sandbox</h3><p>The real layout, camera, Byte and interface captured directly from the game.</p><div class="actions"><a href="/assets/concepts/sandbox-circuits-baseline-v3.png">View screenshot ↗</a></div></div></article>
+        <article><a class="preview" href="/assets/concepts/sandbox-circuits-paintover-v3.png"><img src="/assets/concepts/sandbox-circuits-paintover-v3.png" alt="Paintover of the same screenshot with glowing mint and lavender circuit paths, bright data pulses and softer lighting." /></a><div class="details"><div class="meta">After · Concept paintover</div><h3>Light carrying little thoughts</h3><p>Mint and lavender circuits, brighter traveling data pulses, cream hardware and softer shadows. Lighting reference. Glowing circuit routes and animated data packets are now in the game.</p><div class="actions"><a class="primary" href="/assets/concepts/sandbox-circuits-paintover-v3.png">View paintover ↗</a><a href="/assets/concepts/sandbox-circuits-paintover-v3.png" download>Download PNG ↓</a><a href="/assets/concepts/sandbox-circuits-paintover-v3-prompt.txt">Generation prompt ↗</a></div></div></article>
+      </div>
+    </section>
+    <section id="modular-vat" aria-labelledby="modular-vat-title">
+      <div class="section-heading"><h2 id="modular-vat-title">A place for Byte to float</h2><span>Modular vat reference · No hoses or brain</span></div>
+      <article><a class="preview" href="/assets/concepts/byte-vat-empty-v3.png"><img src="/assets/concepts/byte-vat-empty-v3.png" width="1536" height="1024" alt="Rounded cream and teal wheeled vat with clear blue-lavender liquid nearly to the lid, empty hose sockets and no brain inside." /></a><div class="details"><h3>Nearly full, ready for Byte</h3><p>Clear blue-lavender liquid with a small air gap beneath the lid. The brain and individual collectors can be added separately. This is a modeling reference, not a finished mesh.</p><div class="actions"><a href="/assets/concepts/byte-vat-empty-v3.png" download>Download HD PNG ↓</a><a href="/assets/concepts/byte-vat-empty-v3-prompt.txt">Generation prompt ↗</a></div></div></article>
+    </section>
+    <section id="vat-hoses"><div class="section-heading"><h2>Byte’s collector vat</h2><span>Ten-port lower ring · HD concept</span></div><article><a class="preview" href="/assets/concepts/byte-vat-ten-hoses-v2.png"><img src="/assets/concepts/byte-vat-ten-hoses-v2.png" width="1536" height="1024" alt="Byte in a clear glass vat with ten teal suction hoses arranged around its lower docking ring." /></a><div class="details"><h3>Room to grow</h3><p>Up to four sprouts in a mohawk along the little brain; up to ten independently aimed collectors around the vat base. This is concept art for the final styling.</p><div class="actions"><a href="/assets/concepts/byte-vat-ten-hoses-v2.png" download>Download HD PNG ↓</a><a href="/assets/byte.html">Try the rig in 3D ↗</a><a href="/assets/concepts/byte-vat-ten-hoses-v2-prompt.txt">Generation prompt ↗</a></div></div></article></section>
+    <section id="paintover" aria-labelledby="paintover-title">
+      <div class="section-heading"><h2 id="paintover-title">More breathing room</h2><span>Current game → restrained paintover</span></div>
+      <div class="grid">
+        <article><a class="preview" href="/assets/concepts/sandbox-game-baseline.png" aria-label="Open actual game baseline screenshot"><img src="/assets/concepts/sandbox-game-baseline.png" width="1696" height="1083" alt="Actual game screenshot showing the spacious sandbox, home pad, analyzers and HUD." /></a><div class="details"><div class="meta">Before · Actual game</div><h3>The layout we have</h3><p>A screenshot of the running game. The open floor, building positions, scale and camera are the starting point.</p><div class="actions"><a href="/assets/concepts/sandbox-game-baseline.png">View baseline ↗</a></div></div></article>
+        <article><a class="preview" href="/assets/concepts/sandbox-paintover-v2.png" aria-label="Open quiet sandbox paintover"><img src="/assets/concepts/sandbox-paintover-v2.png" width="1569" height="1002" alt="Paintover of the same game screenshot with restrained cream hardware, teal floor panels and softer lighting, preserving the open space." /></a><div class="details"><div class="meta">After · Concept paintover</div><h3>Polish the space, keep it open</h3><p>Simple bevels, matte surfaces and softer shadows. The same scene, without the extra buildings and decoration from the earlier concepts.</p><div class="actions"><a class="primary" href="/assets/concepts/sandbox-paintover-v2.png">View paintover ↗</a><a href="/assets/concepts/sandbox-paintover-v2.png" download>Download PNG ↓</a></div></div></article>
+      </div>
+    </section>
+    <section id="environments" aria-labelledby="environments-title">
+      <div class="section-heading"><h2 id="environments-title">Earlier explorations</h2><span>Archived direction · too much visual detail</span></div>
+      <div class="grid">
+        <article>
+          <a class="preview" href="/assets/concepts/sandbox-base-v1.png" aria-label="Open original Sandbox base concept"><img src="/assets/concepts/sandbox-base-v1.png" width="1672" height="941" alt="Cream and teal sandbox base with a central drop-off pad and connected text and image analyzers." /></a>
+          <div class="details"><div class="meta">Environment · Sandbox</div><h3>A home for hungry thoughts</h3><p>A clear return path, a central drop-off pad, and connected analyzers and storage. Training feeds sit beyond the base.</p><div class="actions"><a class="primary" href="/assets/concepts/sandbox-base-v1.png">View original ↗</a><a href="/assets/concepts/sandbox-base-v1.png" download>Download PNG ↓</a></div></div>
+        </article>
+        <article>
+          <a class="preview" href="/assets/concepts/local-network-v1.png" aria-label="Open original Local Network concept"><img src="/assets/concepts/local-network-v1.png" width="1672" height="941" alt="Byte explores a toy-like network connecting a cat and dog photo library, document printer, and developer laptop." /></a>
+          <div class="details"><div class="meta">Environment · Local Network</div><h3>Meet the neighborhood</h3><p>Familiar devices become places to explore: a photo library, a document printer, and a laptop full of little code creatures.</p><div class="actions"><a class="primary" href="/assets/concepts/local-network-v1.png">View original ↗</a><a href="/assets/concepts/local-network-v1.png" download>Download PNG ↓</a></div></div>
+        </article>
+      </div>
+    </section>
+    <section id="data-trials" aria-labelledby="trials-title">
+      <div class="section-heading"><h2 id="trials-title">Data Trials · Cats &amp; dogs</h2><span>Generated pictures used in the falling-card minigame</span></div>
+      <div class="grid">
+        <article><a class="preview" href="/assets/trials/cat-v1.png"><img src="/assets/trials/cat-v1.png" width="1254" height="1254" loading="lazy" alt="Orange tabby with pointed ears and whiskers"></a><div class="details"><div class="meta">Data Trials · Picture card</div><h3>Cat</h3><p>Orange tabby with pointed ears and whiskers.</p><div class="actions"><a class="primary" href="/assets/trials/cat-v1.png">View picture ↗</a><a href="/assets/trials/generation.json">Generation prompts</a></div></div></article>
+        <article><a class="preview" href="/assets/trials/dog-v1.png"><img src="/assets/trials/dog-v1.png" width="1254" height="1254" loading="lazy" alt="Golden retriever with floppy ears"></a><div class="details"><div class="meta">Data Trials · Picture card</div><h3>Dog</h3><p>Golden retriever with floppy ears.</p><div class="actions"><a class="primary" href="/assets/trials/dog-v1.png">View picture ↗</a><a href="/assets/trials/generation.json">Generation prompts</a></div></div></article>
+      </div>
+    </section>
+    <section id="characters" aria-labelledby="characters-title">
+      <div class="section-heading"><h2 id="characters-title">One brain. Bigger adventures.</h2><span>Character references · 1254 × 1254 PNG</span></div>
+      <div class="grid">
+        <article>
+          <a class="preview" href="/assets/concepts/byte-sandbox-v1.png" aria-label="Open original Sandbox Byte reference"><img src="/assets/concepts/byte-sandbox-v1.png" width="1254" height="1254" loading="lazy" alt="Byte as a smiling lavender brain with sculpted folds and a short teal collection cable, isolated on a neutral background." /></a>
+          <div class="details"><div class="meta">Character · Stage 01</div><h3>Sandbox Byte</h3><p>A small, curious brain with soft sculpted folds, an expressive face, and one collection cable.</p><div class="actions"><a class="primary" href="/assets/concepts/byte-sandbox-v1.png">View original ↗</a><a href="/assets/concepts/byte-sandbox-v1.png" download>Download PNG ↓</a></div></div>
+        </article>
+        <article>
+          <a class="preview" href="/assets/concepts/byte-travel-vat-v1.png" aria-label="Open original Travel-vat Byte reference"><img src="/assets/concepts/byte-travel-vat-v1.png" width="1254" height="1254" loading="lazy" alt="The same lavender brain protected by a rounded glass travel vat with cream and teal hardware, wheels, and collection cables." /></a>
+          <div class="details"><div class="meta">Character · Stage 02</div><h3>Ready to roll</h3><p>The original little brain, now protected by a glass travel vat with wheels, memory hardware, and a second cable.</p><div class="actions"><a class="primary" href="/assets/concepts/byte-travel-vat-v1.png">View original ↗</a><a href="/assets/concepts/byte-travel-vat-v1.png" download>Download PNG ↓</a></div></div>
+        </article>
+      </div>
+    </section>
+  </main>
+  <footer>Concept artwork generated with imagegen. Byte’s Meshy model is now used in the game; the first environment art pass is implemented, with paintovers retained as visual references.<br><a href="/assets/byte.html">Explore Byte in 3D</a> · <a href="/assets/concepts/prompts.txt">Original prompts</a> · <a href="/assets/concepts/sandbox-paintover-v2-prompt.txt">Paintover prompt</a></footer>
+</body>
+</html>

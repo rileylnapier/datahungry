@@ -1,0 +1,11 @@
+{
+  "tool": "Built-in image_gen",
+  "assets": [
+    "cat-v1.png",
+    "dog-v1.png"
+  ],
+  "prompts": [
+    "Use case: stylized-concept. Asset type: square picture card for a children's cat-or-dog sorting game called Data Hungry. Generate one polished 3D storybook-style illustration of a friendly orange tabby CAT sitting in a relaxed pose, whole animal visible, clearly pointed ears, whiskers, long curled tail, short muzzle. Cute natural animal proportions, soft detailed fur, big expressive eyes. A warm ivory studio background with a very subtle contact shadow, soft daylight, centered animal fills 75 percent of the square. Simple uncluttered composition readable on a small mobile card. No text, no border, no symbols, no other animals, no clothing or props. High quality square image.",
+    "Use case: stylized-concept. Asset type: square picture card for a children's cat-or-dog sorting game called Data Hungry. Generate one polished 3D storybook-style illustration of a friendly golden retriever DOG sitting in a relaxed pose, whole animal visible, clearly floppy ears, broad canine muzzle, happy eyes and fluffy tail. Cute natural animal proportions, soft detailed golden fur. A warm ivory studio background with a very subtle contact shadow, soft daylight, centered animal fills 75 percent of the square. Simple uncluttered composition readable on a small mobile card. No text, no border, no symbols, no other animals, no clothing or props. High quality square image."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "01a14cab-a932-766f-8847-8a7c9509320d",
+  "provider": "Meshy",
+  "model": "meshy-t2.5",
+  "reference": "../concepts/byte-vat-hardware-v4.png",
+  "targetPolycount": 15000,
+  "textureResolution": "2k",
+  "approvedCredits": 15,
+  "status": "succeeded",
+  "consumedCredits": 15,
+  "rawTriangles": 14782,
+  "mesh": "byte-vat-v1.glb",
+  "source": "art/byte-vat.blend",
+  "assembly": "src/byte-vat.js"
+}

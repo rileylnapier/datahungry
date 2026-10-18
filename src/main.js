@@ -35,7 +35,7 @@ let time=0,last=0,uiTime=0,paused=false,panel=null,destination=null,returning=fa
 let route=[],dockTab='base',processingSaveTime=0,benchmarkView=null;
 document.addEventListener('visibilitychange',()=>{last=0;});
 const dataNames={text:'Text',image:'Image',code:'Code'};
-const perf=createPerformanceMonitor(world.renderer,()=>({zone:content.areas[state.zone].name,collectors:connections(state),queue:processingSummary(state).count,creatures:creatures.filter(c=>c.wait<=0&&c.view.group.visible).length,panel:panel||'playing',zoom:world.getZoom()}));
+const perf=createPerformanceMonitor(world.renderer,()=>({zone:content.areas[state.zone].name,collectors:connections(state),queue:processingSummary(state).count,creatures:creatures.filter(c=>c.wait<=0&&c.view.group.visible).length,panel:panel||'playing',zoom:world.getZoom()}),enabled=>{const button=$('performance-toggle');if(button)button.textContent=`${enabled?'Hide':'Show'} performance monitor`;});
 let pictureMilestoneSeen=picturesUnlocked(state);
 function navigateTo(goal){
   route=[];let start=player;

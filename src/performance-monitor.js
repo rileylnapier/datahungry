@@ -6,7 +6,7 @@ export function summarizeFrames(samples){
   const frame=mean('frame');
   return {samples:samples.length,fps:1000/frame,frame,p95:intervals[Math.ceil(intervals.length*.95)-1],worst:intervals.at(-1),slow:samples.filter(s=>s.frame>33.4).length,logic:mean('logic'),scene:mean('scene'),ui:mean('ui')};
 }
-export function createPerformanceMonitor(renderer,context){
+export function createPerformanceMonitor(renderer,context,onVisibilityChange=()=>{}){
   const panel=document.createElement('aside');panel.className='performance-monitor';panel.hidden=true;
   panel.setAttribute('aria-label','Performance monitor');
   panel.innerHTML=`<div class="perf-heading"><strong>Performance</strong><button data-perf="close" aria-label="Hide performance monitor">×</button></div><pre>Collecting frames…</pre><div class="perf-actions"><button data-perf="shadows">Shadows on</button><button data-perf="resolution">Native scale</button><button data-perf="reset">Reset sample</button><button data-perf="download">Save report</button></div><small>60 FPS ≈ 16.7 ms/frame. Scene time is CPU work, not GPU time. Settings are temporary.</small>`;
@@ -16,7 +16,7 @@ export function createPerformanceMonitor(renderer,context){
   const supportsLongTasks=typeof PerformanceObserver!=='undefined'&&PerformanceObserver.supportedEntryTypes?.includes('longtask');
   const reset=()=>{samples=[];history=[];lastReport=null;updated=0;longTasks=0;longestTask=0;output.textContent='Collecting frames…';};
   function setEnabled(value){
-    enabled=value;panel.hidden=!enabled;observer?.disconnect();observer=null;
+    enabled=value;panel.hidden=!enabled;observer?.disconnect();observer=null;onVisibilityChange(enabled);
     if(enabled){reset();if(supportsLongTasks){observer=new PerformanceObserver(list=>{for(const task of list.getEntries()){longTasks++;longestTask=Math.max(longestTask,task.duration);}});observer.observe({type:'longtask'});}}
   }
   function record(sample,now){
@@ -28,7 +28,7 @@ export function createPerformanceMonitor(renderer,context){
     lastReport={time:new Date().toISOString(),...context(),...stats,drawCalls:info.render.calls,triangles:info.render.triangles,geometries:info.memory.geometries,textures:info.memory.textures,programs:info.programs?.length??0,pixelRatio:renderer.getPixelRatio(),width:renderer.domElement.width,height:renderer.domElement.height,shadows:renderer.shadowMap.enabled,longTasks:supportsLongTasks?longTasks:null,longestTask:supportsLongTasks?longestTask:null};
     history.push(lastReport);if(history.length>60)history.shift();
     const n=v=>v.toFixed(1);
-    output.textContent=`${n(stats.fps)} FPS · frame ${n(stats.frame)} ms\np95 ${n(stats.p95)} ms · worst ${n(stats.worst)} ms\n${stats.slow}/${stats.samples} frames > 33 ms\nCPU: logic ${n(stats.logic)} · scene ${n(stats.scene)} · UI ${n(stats.ui)} ms\nDraw calls ${lastReport.drawCalls} · triangles ${lastReport.triangles.toLocaleString()}\nGPU resources: ${lastReport.geometries} geometries · ${lastReport.textures} textures\n${lastReport.zone} · ${lastReport.collectors} hoses · queue ${lastReport.queue}\n${lastReport.width}×${lastReport.height} · scale ${n(lastReport.pixelRatio)}\nLong tasks (>50 ms): ${supportsLongTasks?longTasks+' · max '+n(longestTask)+' ms':'unavailable in this browser'}`;
+    output.textContent=`${n(stats.fps)} FPS · frame ${n(stats.frame)} ms\np95 ${n(stats.p95)} ms · worst ${n(stats.worst)} ms\n${stats.slow}/${stats.samples} frames > 33 ms\nCPU: logic ${n(stats.logic)} · scene ${n(stats.scene)} · UI ${n(stats.ui)} ms\nDraw calls ${lastReport.drawCalls} · triangles ${lastReport.triangles.toLocaleString()}\nGPU resources: ${lastReport.geometries} geometries · ${lastReport.textures} textures\n${lastReport.zone} · ${lastReport.panel} · ${lastReport.collectors} hoses · queue ${lastReport.queue}\n${lastReport.width}×${lastReport.height} · scale ${n(lastReport.pixelRatio)}\nLong tasks (>50 ms): ${supportsLongTasks?longTasks+' · max '+n(longestTask)+' ms':'unavailable in this browser'}`;
   }
   panel.addEventListener('click',event=>{
     const button=event.target.closest('[data-perf]');if(!button)return;

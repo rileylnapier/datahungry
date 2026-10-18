@@ -1,7 +1,7 @@
 // Generated from content/local-manifest.json by scripts/build.mjs.
 export default {
   "schemaVersion": 1,
-  "contentVersion": 13,
+  "contentVersion": 14,
   "minimumAppVersion": "0.1.0",
   "channel": "development",
   "disabled": false,
@@ -151,10 +151,10 @@ export default {
           "count": 1,
           "packetSize": 12,
           "habitat": {
-            "minX": -12,
-            "maxX": -7,
-            "minZ": -25,
-            "maxZ": -19
+            "minX": -6,
+            "maxX": -4,
+            "minZ": -28,
+            "maxZ": -26
           }
         },
         {

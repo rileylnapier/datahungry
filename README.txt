@@ -89,6 +89,8 @@ Play
   Claiming the reward equips a travel vat and opens the Local Network for free.
   Previously unlocked saves keep their vat and access.
   Deeper in Sandbox, a thick Full Book and framed 4K Image each carry 12 KB.
+  The Full Book wanders in a small northern clearing west of the gateway,
+  separate from the paragraph feed and the other training habitats.
   Their base downloads take 45/60 seconds and pay 120/160 processing points;
   decoding upgrades shorten that time. Each retained file teaches one example,
   like other data. They respawn after 45/55 seconds; 4K appears after images unlock.

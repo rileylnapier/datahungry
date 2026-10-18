@@ -1,5 +1,6 @@
 import * as THREE from '../vendor/three/three.module.js';
 import {GLTFLoader} from '../vendor/three/loaders/GLTFLoader.js';
+import {applyHoseProgress} from './hose-progress.js';
 
 export const COLLECTOR_URL=new URL('../assets/models/byte-collector-v1.glb',import.meta.url).href;
 const forward=new THREE.Vector3(0,0,1);
@@ -21,18 +22,19 @@ export function cloneCollector(template){
   return copy;
 }
 
-export function createByteCollectors(parent,{applyMaterial=()=>{},template=null,brainAnchor=null}={}){
+export function createByteCollectors(parent,{applyMaterial=()=>{},template=null,brainAnchor=null,targetColor=()=>0xc8f99d}={}){
   const slots=[],group=new THREE.Group();group.name='Byte collectors';parent.add(group);
   let ready=false;
   const asset=template||(templatePromise??=new GLTFLoader().loadAsync(COLLECTOR_URL));
   const loading=asset.then(({scene})=>{
     for(let i=0;i<10;i++){
       const root=cloneCollector(scene);group.add(root);root.visible=false;
-      root.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.material=o.material.clone();applyMaterial(o.material);}});
+      const uniforms={hoseProgress:{value:0},hoseActive:{value:0},hoseTime:{value:0},hoseColor:{value:new THREE.Color(0xc8f99d)}};
+      root.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.material=o.material.clone();applyMaterial(o.material);applyHoseProgress(o,uniforms);}});
       const bones=Array.from({length:9},(_,j)=>root.getObjectByName(`Hose_${String(j).padStart(2,'0')}`));
       const rest=bones.map(b=>b.quaternion.clone());
       const socket=new THREE.Mesh(new THREE.SphereGeometry(.075,12,8),new THREE.MeshStandardMaterial({color:0x5f9691,roughness:.4}));applyMaterial(socket.material);root.add(socket);
-      slots.push({root,bones,rest,socket,target:null,kick:0,port:null,dockBlend:0,mouth:new THREE.Vector3(),curve:new THREE.CubicBezierCurve3()});
+      slots.push({root,bones,rest,socket,uniforms,target:null,kick:0,port:null,dockBlend:0,reachBlend:0,goal:new THREE.Vector3(),mouth:new THREE.Vector3(),curve:new THREE.CubicBezierCurve3()});
     }
     ready=true;
   });
@@ -46,20 +48,24 @@ export function createByteCollectors(parent,{applyMaterial=()=>{},template=null,
       const s=slots[index];if(!s?.root.visible||!s.port||s.dockBlend<.85)return null;
       const point=s.curve.getPoint(THREE.MathUtils.clamp(t,0,1));return parent.localToWorld(point);
     },
-    collect(target){const s=slots.find(s=>s.target===target);if(s){s.kick=.25;s.target=null;}},
+    collect(target){const s=slots.find(s=>s.target===target);if(!s)return null;const path=s.curve.getPoints(20).map(p=>parent.localToWorld(p)).reverse();s.kick=.4;s.uniforms.hoseProgress.value=1;s.target=null;return path;},
     update({count=1,targets=[],dt=0,time=0,inVat=false,dockPorts=[]}={}){
       if(!ready)return;
       count=THREE.MathUtils.clamp(Math.floor(count),1,inVat?10:4);
       if(dockPorts.length)targets=[];
       for(let i=count;i<slots.length;i++){slots[i].port=null;slots[i].dockBlend=0;}
       for(let i=0;i<slots.length;i++)if(i>=count||!targets.includes(slots[i].target))slots[i].target=null;
-      for(const target of targets)if(!slots.some(s=>s.target===target)){const free=slots.slice(0,count).find(s=>!s.target);if(free)free.target=target;}
       parent.updateWorldMatrix(true,false);
       const anchors=Array.from({length:count},(_,i)=>{
         const angle=i/count*Math.PI*2,anchor=inVat?new THREE.Vector3(Math.sin(angle)*.76,.48,Math.cos(angle)*.76):new THREE.Vector3(0,0,.44-i*.23);
         if(!inVat){anchor.y=.84-Math.abs(anchor.z)*.13;if(brainAnchor)brainAnchor(i,anchor);}
         return anchor;
       });
+      for(const target of targets)if(!slots.some(s=>s.target===target)){
+        const goal=new THREE.Vector3(target.x,target.downloadHeight??.65,target.z);
+        const free=slots.slice(0,count).map((slot,i)=>({slot,distance:parent.localToWorld(anchors[i].clone()).distanceToSquared(goal)})).filter(({slot})=>!slot.target).sort((a,b)=>a.distance-b.distance)[0]?.slot;
+        if(free)free.target=target;
+      }
       // A single service socket uses the nearest existing hose, so vat hoses
       // don't have to cross the brain or glass to reach a device behind Byte.
       let serviceIndex=-1;
@@ -84,7 +90,7 @@ export function createByteCollectors(parent,{applyMaterial=()=>{},template=null,
         if(s.dockBlend<.001){s.dockBlend=0;if(!ports.length)s.port=null;}
         if(s.target){s.port=null;s.dockBlend=0;}
         s.kick=Math.max(0,s.kick-dt);
-        const recoil=Math.sin(s.kick/.25*Math.PI)*.09;
+        const recoil=Math.sin(s.kick/.4*Math.PI)*.09;
         // Keep the mohawk roots fixed, but let each resting sprout lean to its
         // own side. Different rhythms avoid a synchronized row of antennae.
         const restingSprout=!inVat&&!s.target;
@@ -101,6 +107,18 @@ export function createByteCollectors(parent,{applyMaterial=()=>{},template=null,
         s.curve.v1.copy(anchor).addScaledVector(outward,inVat?.30:.04);s.curve.v1.y+=inVat?.16:.34;
         s.curve.v3.copy(end);s.curve.v2.copy(end).addScaledVector(direction,-.22);
         if(restingSprout){s.curve.v1.x+=lean*.2;s.curve.v2.x+=sway*.35;}
+        if(s.target){s.goal.set(s.target.x,s.target.downloadHeight??.65,s.target.z);s.uniforms.hoseProgress.value=THREE.MathUtils.clamp(s.target.progress??0,0,1);s.uniforms.hoseColor.value.setHex(targetColor(s.target));}
+        s.reachBlend=THREE.MathUtils.lerp(s.reachBlend,s.target?1:0,1-Math.exp(-dt*(s.target?18:9)));
+        if(s.reachBlend>.995)s.reachBlend=1;if(s.reachBlend<.001)s.reachBlend=0;
+        s.uniforms.hoseActive.value=s.reachBlend;s.uniforms.hoseTime.value=time;
+        if(s.reachBlend>0){
+          const goal=parent.worldToLocal(s.goal.clone()),pull=goal.clone().sub(anchor).normalize();
+          const tip=goal.clone().addScaledVector(pull,-.175);
+          const shoulder=anchor.clone().addScaledVector(outward,.3);shoulder.y+=inVat?.45:.5;
+          s.curve.v1.lerp(shoulder,s.reachBlend);
+          s.curve.v2.lerp(tip.clone().addScaledVector(pull,-.5),s.reachBlend);
+          s.curve.v3.lerp(tip,s.reachBlend);direction.lerp(pull,s.reachBlend).normalize();
+        }
         if(s.port&&s.dockBlend>0){
           // Stretch the actual rig to the socket. The nozzle points down into
           // the port; account for Byte's scale so its mouth meets it exactly.

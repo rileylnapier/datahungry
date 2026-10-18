@@ -163,3 +163,34 @@
  .device-conversation .story-pagination{margin-bottom:10px}
  .device-conversation .zone-info,.device-conversation .mission,.device-conversation .knowledge-hud,.device-conversation .legend,.device-conversation .byte-card{visibility:hidden}
 }
+
+.phone-home-label{display:none}.menu-zoom{display:flex;gap:8px;margin:12px 0}.menu-zoom button{min-height:44px;flex:1;border:1px solid #789b8b55;background:#20383d;color:#e0f4d9;border-radius:10px;font:inherit}
+/* Phone play: one goal, cargo meter, Home. Secondary details live in pause. */
+@media(max-width:600px),(max-height:500px){
+ #app{min-height:0}
+ .brand,.prototype,.zone-info .eyebrow,.zone-info p,.knowledge-hud,.legend,.byte-card,.controls-hint,.zoom-controls,#sound{display:none!important}
+ .topbar{top:max(12px,env(safe-area-inset-top));left:12px;right:12px;justify-content:flex-end}
+ .top-actions{gap:4px}.top-actions .icon-button{width:44px;height:44px}
+ .zone-info{top:max(23px,calc(env(safe-area-inset-top) + 11px));left:16px;max-width:calc(100% - 245px)}
+ .zone-info h1,#app[data-network=true] .zone-info h1{font-size:18px;letter-spacing:-.5px;line-height:1.3;margin:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .wallet{top:max(24px,calc(env(safe-area-inset-top) + 12px));right:158px;gap:5px}
+ .wallet strong{font-size:18px;font-weight:650}.wallet div>span{display:none}.point-icon{display:grid;width:18px;height:20px;border:0;background:none;font-size:18px}
+ .mission{display:block;top:calc(66px + env(safe-area-inset-top));left:12px;width:calc(100% - 24px);padding:10px 12px;border:1px solid #a4c7be25;border-radius:12px;background:#11272ce8}
+ .mission>.eyebrow{display:none}#mission-guide>div{gap:7px}.mission p{font-size:14px;line-height:1.3;margin:0;font-weight:650}
+ #mission-guide small{font-size:12px;line-height:1.4;margin-top:4px;color:#b6cbc2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+ .bottom-hud{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));width:auto;transform:none;padding:12px;border-radius:16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 14px}
+ .context-head{grid-column:1;grid-row:1;font-size:10px;letter-spacing:.6px;gap:8px}.context-head strong{font-size:16px;white-space:nowrap}
+ .context-track{grid-column:1;grid-row:2;margin:0;align-self:center;height:6px}.context-foot{display:contents}
+ #cargo-types,#last-download,#haul,#base-status,#dock-action{display:none!important}
+ #dock-guide{grid-column:2;grid-row:1 / span 2;border:0;border-radius:10px;background:#cbf4a8;color:#20372b;min-height:44px;padding:8px 12px;display:flex;align-items:center;gap:6px;font-size:14px;font-weight:650}
+ .desktop-home-label{display:none}.phone-home-label{display:inline}
+ #call-courier{grid-column:1 / -1;margin:0;padding:8px;min-height:44px;border-top:1px solid #a4c7be30;font-size:13px}#call-courier:disabled{display:none}
+ #story-interact{top:auto;bottom:calc(94px + env(safe-area-inset-bottom));transform:translateX(-50%);font-size:14px;padding:10px 14px}
+ #app:has(#call-courier:not([hidden]):not(:disabled)) #story-interact{bottom:calc(146px + env(safe-area-inset-bottom))}
+ #health-hud{top:calc(146px + env(safe-area-inset-top));right:12px;width:116px;padding:7px;font-size:10px}#health-warning:empty{display:none}
+ #toast{top:calc(150px + env(safe-area-inset-top));font-size:13px;padding:8px 12px}
+ .device-conversation .mission,.device-conversation .zone-info,.device-conversation .wallet{visibility:hidden}
+}
+@media(max-height:500px) and (min-width:601px){
+ .mission{width:300px;top:66px}.bottom-hud{left:auto;width:340px}.zone-info{max-width:calc(100% - 245px)}#health-hud{top:66px}
+}

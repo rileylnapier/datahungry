@@ -1,9 +1,19 @@
 import {goalProgress} from './goal-progress.js';
-import {DIALOGUES,STORY_NODES,STORY_SITES,storyObjective,terminalEvent,storyEventAvailable,MEDIA_GOAL} from './story.js';
+import {DIALOGUES,storyObjective,terminalEvent,storyEventAvailable,MEDIA_GOAL} from './story.js';
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function storyCard(s,actions=true){
   const q=storyObjective(s);
   return `<div class="knowledge-card story-assignment"><small>ACTIVE ASSIGNMENT</small><strong>${escape(q.title)}</strong><span>${escape(q.detail)}</span>${actions?'<button class="primary" data-story-go>Go to objective ↗</button><button class="restart-button" data-story-log>Assignments & Help Board ↗</button>':''}</div>`;
+}
+function storyInventory(s){
+  const d=s.story.done,items=[];
+  if(d.guest)items.push('Guest key ✓');
+  if(d.email)items.push(`Media lessons · Sound ${goalProgress(s.knowledge.audio,MEDIA_GOAL)} · Video ${goalProgress(s.knowledge.video,MEDIA_GOAL)}`);
+  if(d.developer)items.push('Server tools recovered ✓');
+  if(d.lesson)items.push(`Server sound ${d.infected?'restored ✓':'needs repair'}`);
+  if(d.infected)items.push(`Video index ${d.backup?'restored ✓':'needs recovery'}`);
+  if(d.firewall)items.push(`Web Bridge ${d.bridge?'assembled ✓':'parts ready · assemble at home'}`);
+  return items.length?`<div class="story-inventory"><strong>Your discoveries · saved</strong>${items.map(item=>`<span>${escape(item)}</span>`).join('')}</div>`:'';
 }
 export function renderStory(s,atTerminal=false){
   const active=s.story.active;
@@ -13,5 +23,5 @@ export function renderStory(s,atTerminal=false){
   }
   const q=storyObjective(s),event=atTerminal?terminalEvent(s):null,lesson=storyEventAvailable(s,'lesson');
   const completed=Object.entries(DIALOGUES).filter(([id])=>s.story.done[id]);
-  return `<span class="eyebrow">${atTerminal?'TRAINING TERMINAL':'BYTE’S ASSIGNMENT LOG'}</span><h2 id="panel-title">A little brain. A real assignment.</h2>${storyCard(s,false)}${event?`<button class="primary" data-story-begin="${event}">${event==='guest'?'Read PATCH’s reply':event==='search'?'Open the Help Board':'Read assignment'} →</button>`:lesson?'<button class="primary" data-story-begin="lesson">Read media analysis →</button>':`<button class="primary" data-story-go>${q.destination?'Go to objective':'Keep exploring'} ↗</button>`}${atTerminal&&!s.unlocked?' <div class="story-trial" id="story-trial"></div>':''}<div class="story-inventory"><strong>Quest items · always saved</strong><span>Guest key ${s.story.done.guest?'✓':'—'}</span>${s.story.done.email?`<span>Media lessons · Sound ${goalProgress(s.knowledge.audio,MEDIA_GOAL)} · Video ${goalProgress(s.knowledge.video,MEDIA_GOAL)}</span><span>Server sound ${s.story.done.infected?'restored ✓':'offline'}</span><span>Local video ${s.story.done.backup?'restored ✓':'unavailable'}</span>`:''}<span>Web Bridge ${s.story.done.bridge?'assembled ✓':`${STORY_NODES.filter(id=>s.story.done[id]).length}/3 components`}</span>${STORY_NODES.map(id=>`<span>${STORY_SITES[id].name.replace('Maintenance node · ','')}: ${s.story.done[id]?'✓':'not recovered'}</span>`).join('')}</div><details class="story-history"><summary>Assignment history & Help Board · ${completed.length} entries</summary>${completed.map(([id,d])=>`<article><h3>${escape(d.title)} ✓</h3>${d.lines.map(l=>`<p><strong>${escape(l.speaker)}</strong> ${escape(l.text)}</p>`).join('')}</article>`).join('')||'<p>Your first assignment is waiting at the Training Terminal beside home.</p>'}</details>`;
+  return `<span class="eyebrow">${atTerminal?'TRAINING TERMINAL':'BYTE’S ASSIGNMENT LOG'}</span><h2 id="panel-title">A little brain. A real assignment.</h2>${storyCard(s,false)}${event?`<button class="primary" data-story-begin="${event}">${event==='guest'?'Read PATCH’s reply':event==='search'?'Open the Help Board':'Read assignment'} →</button>`:lesson?'<button class="primary" data-story-begin="lesson">Read media analysis →</button>':`<button class="primary" data-story-go>${q.destination?'Go to objective':'Keep exploring'} ↗</button>`}${atTerminal&&!s.unlocked?' <div class="story-trial" id="story-trial"></div>':''}${storyInventory(s)}<details class="story-history"><summary>Assignment history${s.story.done.search?' & Help Board':''} · ${completed.length} ${completed.length===1?'entry':'entries'}</summary>${completed.map(([id,d])=>`<article><h3>${escape(d.title)} ✓</h3>${d.lines.map(l=>`<p><strong>${escape(l.speaker)}</strong> ${escape(l.text)}</p>`).join('')}</article>`).join('')||'<p>Your first assignment is waiting at the Training Terminal beside home.</p>'}</details>`;
 }

@@ -292,3 +292,16 @@ with the bare brain and one head hose; the vat uses its nearest unlocked hose.
 Home keeps its separate multi-hose unloading ring. Remote assignment-log reading
 does not create a cable across the map. Connected conversations leave the world
 visible, with a raised camera and bottom dialogue sheet on smaller screens.
+
+COLLECTION HOSE / PHONE HUD PASS
+-------------------------------
+The rigged collection hose now reaches each data creature. Decode progress lights
+up the hose from the target toward Byte; captured fragments follow its curve,
+and the hose retracts on completion or loss of range. Existing unlocked hoses
+remain the concurrency limit. The old download bars are only a fallback if the
+hose model fails to load. A nearest-target label keeps type, KB, and progress
+readable without putting a separate bar on every target.
+Phone portrait and landscape use a compact objective and cargo/Home strip.
+Pause holds knowledge, cargo breakdown, sound, zoom controls, and controls/tips;
+pinch zoom remains available. Home opens upgrades when Byte is already docked.
+The story log lists only discoveries introduced by completed conversations.

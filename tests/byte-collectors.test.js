@@ -29,7 +29,7 @@ test('one to three collectors aim independently and preserve assignment during c
   const parent=new THREE.Group();parent.position.set(7,2,-5);parent.rotation.y=.7;parent.scale.setScalar(1.2);
   const collectors=createByteCollectors(parent,{template:asset()});await collectors.loading;
   const targets=[{x:10,z:2},{x:0,z:4},{x:7,z:-9}];
-  collectors.update({count:3,targets,time:0,dt:.016});
+  for(let i=0;i<30;i++)collectors.update({count:3,targets,time:0,dt:.05});
   const group=parent.getObjectByName('Byte collectors');assert.equal(group.children.filter(c=>c.visible).length,3);
   const origins=targets.map(t=>collectors.getOrigin(t).clone());
   // Crest-mounted mouths are closer than the old side arms, but remain independent.
@@ -101,4 +101,22 @@ test('device uses exactly one unlocked hose, reaches its socket, and releases ba
     assert.ok(Array.from({length:count},(_,i)=>c.getDockPort(i)).every(p=>p===null));
     c.update({count,inVat,targets:[target],dt:.05});assert.ok(c.getOrigin(target));
   }
+});
+
+
+test('download hose reaches a moving target, captures along its curve and retracts on disconnect',async()=>{
+  const parent=new THREE.Group();parent.rotation.y=.6;parent.scale.setScalar(1.275);
+  const c=createByteCollectors(parent,{template:asset()});await c.loading;
+  const target={x:3,z:2,progress:.5};
+  for(let i=0;i<30;i++)c.update({count:1,targets:[target],dt:.05});
+  assert.ok(c.getOrigin(target).distanceTo(new THREE.Vector3(3,.65,2))<.001);
+  target.x=4;target.z=-2;c.update({count:1,targets:[target],dt:.05});
+  assert.ok(c.getOrigin(target).distanceTo(new THREE.Vector3(4,.65,-2))<.001);
+  const path=c.collect(target);assert.equal(path.length,21);
+  assert.ok(path[0].distanceTo(new THREE.Vector3(4,.65,-2))<.3);
+  assert.ok(path.at(-1).distanceTo(new THREE.Vector3(0,0,0))<2);
+  for(let i=0;i<30;i++)c.update({count:1,targets:[],dt:.05});
+  assert.equal(c.getOrigin(target),undefined);
+  const root=parent.getObjectByName('Byte collectors').children[0];
+  const tip=root.getObjectByName('Hose_08');assert.ok(tip.position.length()<2,'hose returns to a short resting pose');
 });

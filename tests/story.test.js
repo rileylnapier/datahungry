@@ -1,3 +1,4 @@
+import {renderStory} from '../src/story-view.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createState,serialize,readSave,unlock,defeat,collect,bank} from '../src/state.js';
@@ -77,4 +78,17 @@ test('malware warning gives an early shield goal and does not interrupt protecte
   assert.equal(storyObjective(s).site,'photos');
   const protectedState=createState({unlocked:true,programs:{firewall:true}});
   assert.equal(beginStory(protectedState,'danger'),false);
+});
+
+
+test('assignment log reveals quest discoveries only after their conversations',()=>{
+  const s=createState();finish(s,'intro');
+  let html=renderStory(s);
+  for(const spoiler of ['Guest key','Web Bridge','Server tools','Video index','Media lessons','Help Board'])assert.ok(!html.includes(spoiler),spoiler);
+  assert.ok(!html.includes('story-inventory'));assert.match(html,/1 entry/);
+  s.unlocked=true;Object.assign(s.story.done,{words:true,pictures:true,assignment:true,search:true,guest:true});
+  html=renderStory(s);assert.match(html,/Guest key ✓/);assert.ok(!html.includes('Web Bridge'));
+  finish(s,'email');html=renderStory(s);assert.match(html,/Media lessons/);assert.ok(!html.includes('Server tools'));assert.ok(!html.includes('Web Bridge'));
+  s.knowledge.audio=3;s.knowledge.video=3;finish(s,'lesson');html=renderStory(s);assert.match(html,/Server sound needs repair/);assert.ok(!html.includes('Video index'));
+  s.story.done.firewall=true;html=renderStory(s);assert.match(html,/Web Bridge parts ready/);
 });

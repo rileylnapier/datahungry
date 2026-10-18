@@ -325,11 +325,11 @@ export function createScene(canvas, state, content, exploration) {
   const byte=new THREE.Group();scene.add(byte);
   const body=new THREE.Group();byte.add(body);
   let brainAttachments=null;
-  const collectors=createByteCollectors(body,{applyMaterial:worldFog.apply,brainAnchor:(i,out)=>{
+  const collectors=createByteCollectors(body,{applyMaterial:worldFog.apply,targetColor:t=>TYPES[t.type]?.color??0xf3b77f,brainAnchor:(i,out)=>{
     if(brainAttachments?.(i,out))return out;
     out.set(0,.29,.44-i*.23);brain.localToWorld(out);return body.worldToLocal(out);
   }});
-  collectors.loading.then(()=>canvas.dataset.byteCollectors='ready').catch(error=>{canvas.dataset.byteCollectors='fallback';console.warn('Collector rig unavailable',error);});
+  collectors.loading.then(()=>canvas.dataset.byteCollectors='ready').catch(error=>{canvas.dataset.byteCollectors='fallback';console.warn('Collector rig unavailable',error);cables.push(...Array.from({length:10},()=>createDownloadCable(scene,document.getElementById('labels'))));});
   const brain=new THREE.Group();brain.position.y=1.1;body.add(brain);
   ball(brain,0xc5a0df,-.21,0,0,.41,.34,.35);ball(brain,0xc5a0df,.21,0,0,.41,.34,.35);
   for(let i=0;i<18;i++){const a=i*2.4;ball(brain, i%3 ? 0xcca9e5:0xb88bd6,Math.sin(a)*.43,.10+Math.cos(i*1.7)*.16,Math.cos(a)*.25,.16,.17,.15);}
@@ -360,8 +360,8 @@ export function createScene(canvas, state, content, exploration) {
   const radiusRing=mesh(scene,new THREE.RingGeometry(1,1.022,80),new THREE.MeshBasicMaterial({color:0xc8edbb,transparent:true,opacity:.28,depthWrite:false,side:THREE.DoubleSide}));radiusRing.rotation.x=-Math.PI/2;
   const targetRing=mesh(scene,new THREE.RingGeometry(.17,.22,32),new THREE.MeshBasicMaterial({color:0xd2f8b7,transparent:true,opacity:.7,depthWrite:false,side:THREE.DoubleSide}));targetRing.rotation.x=-Math.PI/2;targetRing.visible=false;
   // Ten live downloads plus room for their completion flashes.
-  const cables=Array.from({length:20},()=>createDownloadCable(scene,document.getElementById('labels')));
-  function completeDownload(target){collectors.collect(target);byteAnimator?.collect();const cable=cables.find(c=>c.target===target);if(cable){cable.target=null;cable.completion=.24;}}
+  const cables=[];let capturePath=null;
+  function completeDownload(target){capturePath=collectors.collect(target);byteAnimator?.collect();const cable=cables.find(c=>c.target===target);if(cable){cable.target=null;cable.completion=.24;}}
   const particles=[];
   const fragments=new Map();
   for(const [type,glyph,color] of [['text','hello','#e6ffbc'],['image','▪','#d8c4ff'],['code','{ }','#ffd5ab'],['audio','~♪~','#88dfe1'],['video','▶','#f3b1c7']]){
@@ -457,7 +457,7 @@ export function createScene(canvas, state, content, exploration) {
     return g;
   }
   function burst(position,color,count=12){for(let i=0;i<count;i++){const m=mesh(scene,particleGeo,mat(color,.4),position.x,position.y+.5,position.z);particles.push({mesh:m,age:0,velocity:new THREE.Vector3((rnd()-.5)*2,1+rnd(),(rnd()-.5)*2)});}}
-  function absorb(position,type){for(let i=0;i<7;i++){const sprite=new THREE.Sprite(fragments.get(type));sprite.scale.set(.45,.23,1);sprite.position.copy(position);scene.add(sprite);particles.push({mesh:sprite,age:-i*.06,source:position.clone(),phase:i*.9});}}
+  function absorb(position,type){const path=capturePath?new THREE.CatmullRomCurve3(capturePath):null;capturePath=null;for(let i=0;i<7;i++){const sprite=new THREE.Sprite(fragments.get(type));sprite.scale.set(.45,.23,1);sprite.position.copy(position);scene.add(sprite);particles.push({mesh:sprite,age:-i*.06,source:position.clone(),path,phase:i*.9});}}
   const viewport={width:0,height:0};
   function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;viewport.width=w;viewport.height=h;renderer.setSize(w,h,false);const height=h>w?20:16;camera.left=-height*w/h/2;camera.right=-camera.left;camera.top=height/2;camera.bottom=-height/2;camera.updateProjectionMatrix();}
   resize();window.addEventListener('resize',resize);
@@ -566,7 +566,7 @@ export function createScene(canvas, state, content, exploration) {
       else if(cable.target){const mouth=collectors.getOrigin(cable.target);cable.update(mouth?{x:mouth.x,z:mouth.z,downloadHeight:mouth.y}:downloadOrigin,cable.target,cable.target.progress??0,time,i,project);}
       else cable.hide();
     });
-    for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.age+=dt;if(p.source){const t=Math.max(0,p.age),swirl=Math.sin(t*Math.PI)*.4;p.mesh.position.set(p.source.x+(player.x-p.source.x)*t+Math.cos(t*9+p.phase)*swirl,p.source.y+((state.unlocked?1.2:.5)-p.source.y)*t+Math.sin(t*Math.PI)*.5,p.source.z+(player.z-p.source.z)*t+Math.sin(t*9+p.phase)*swirl);p.mesh.scale.set(.5*(1-t*.7),.25*(1-t*.7),1);}else{p.mesh.position.addScaledVector(p.velocity,dt);p.velocity.y-=dt*2;p.mesh.scale.setScalar(Math.max(0,1-p.age));}if(p.age>1){scene.remove(p.mesh);particles.splice(i,1);}}
+    for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.age+=dt;if(p.source){const t=Math.max(0,p.age),swirl=Math.sin(t*Math.PI)*.4;p.mesh.position.set(p.source.x+(player.x-p.source.x)*t+Math.cos(t*9+p.phase)*swirl,p.source.y+((state.unlocked?1.2:.5)-p.source.y)*t+Math.sin(t*Math.PI)*.5,p.source.z+(player.z-p.source.z)*t+Math.sin(t*9+p.phase)*swirl);if(p.path)p.path.getPoint(Math.min(1,t),p.mesh.position);p.mesh.scale.set(.5*(1-t*.7),.25*(1-t*.7),1);}else{p.mesh.position.addScaledVector(p.velocity,dt);p.velocity.y-=dt*2;p.mesh.scale.setScalar(Math.max(0,1-p.age));}if(p.age>1){scene.remove(p.mesh);particles.splice(i,1);}}
     renderer.render(scene,camera);
   }
   return {renderer,scene,viewport,draw,setZoom,getZoom:()=>zoomTarget,creature,malware,burst,absorb,completeDownload,pulseEmitter,deliverData,storeData,project,worldPoint,THREE};

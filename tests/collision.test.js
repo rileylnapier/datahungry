@@ -51,9 +51,9 @@ test('routes clear folders and all training outlets for both brain and largest v
     assert.deepEqual(from,{x:-3,z:5});
   }
 });
-test('passing the benchmark permanently equips the larger protective vat',()=>{
+test('claiming PATCH’s vat permanently equips the larger protective vat',()=>{
   const s=createState({trial:{started:true,text:6,image:4},total:120,knowledge:{text:60},levels:{capacity:2}}),small=bodyRadius(s);
-  assert.equal(unlock(s),true);
+  s.story.done.guest=true;assert.equal(unlock(s),true);
   assert.ok(bodyRadius(s)>small*1.8);
   assert.equal(bodyRadius(readSave({getItem:()=>serialize(s)})),bodyRadius(s));
 });

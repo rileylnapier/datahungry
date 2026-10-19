@@ -7,7 +7,7 @@ test('equipping the vat opens higher Byte and base tiers without resetting purch
   const s=createState({points:1000000,total:1000,knowledge:{text:60,image:8},levels:{capacity:5,range:5,decode:5,parallel:3},base:{imageMuncher:true,storageLevels:{text:3,image:3},speedLevel:3},trial:{started:true,text:6,image:4}});
   for(const id of ['capacity','range','decode','parallel'])assert.equal(buy(s,id),false);
   assert.equal(upgradeAnalyzer(s),false);
-  const points=s.points;assert.equal(unlock(s),true);assert.equal(s.points,points);
+  const points=s.points;s.story.done.guest=true;assert.equal(unlock(s),true);assert.equal(s.points,points);
   assert.equal(capacity(s),42);assert.equal(storageCapacity(s,'text'),144);assert.equal(analyzerRate(s),2.5);
   for(const id of ['capacity','range','decode','parallel'])while(s.levels[id]<maxLevel(id,s))assert.equal(buy(s,id),true);
   for(const type of ['text','image'])for(let i=0;i<3;i++)assert.equal(upgradeStorage(s,type),true);

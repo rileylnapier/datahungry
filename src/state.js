@@ -66,7 +66,7 @@ export function buy(s, id) {
   if (!UPGRADES[id] || !upgradeUnlocked(s,id) || s.levels[id] >= maxLevel(id,s) || s.points < cost(s, id)) return false;
   s.points -= cost(s, id); s.levels[id]++; return true;
 }
-export function unlock(s) { if (s.unlocked || !trialPassed(s)) return false; s.unlocked = true;if(!s.network.libraryGranted){s.base.libraryBonus.text+=48;s.base.libraryBonus.image+=96;s.network.libraryGranted=true;}return true; }
+export function unlock(s) { if (s.unlocked || !trialPassed(s) || !s.story.done.guest) return false; s.unlocked = true;if(!s.network.libraryGranted){s.base.libraryBonus.text+=48;s.base.libraryBonus.image+=96;s.network.libraryGranted=true;}return true; }
 export function defeat(s) { const before = haulValue(s); s.cargo = s.cargo.filter((_, i) => i % 2 === 1); s.health = 100; s.zone = 0; return before - haulValue(s); }
 export function serialize(s) { return JSON.stringify({ story:s.story,programs:s.programs,agents:saveAgents(s.agents),samples:s.samples,trial:s.trial,network:s.network,explored:s.explored,zoom:s.zoom,knowledge:s.knowledge, base:s.base, points: s.points, total: s.total, levels: s.levels, unlocked: s.unlocked, visited: s.visited, stressPassed: s.stressPassed, collected: s.collected, banks: s.banks }); }
 export function readSave(storage) { try { return createState(JSON.parse(storage.getItem(SAVE_KEY) || '{}')); } catch { return createState(); } }

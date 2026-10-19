@@ -1,3 +1,4 @@
+import {debugPreset} from '../src/debug.js';
 import {renderStory} from '../src/story-view.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -13,15 +14,15 @@ import starter from '../src/starter-content.js';
 const finish=(s,id)=>{assert.equal(beginStory(s,id),true,`can start ${id}`);let result;for(let i=s.story.cursor;i<DIALOGUES[id].lines.length;i++)result=advanceStory(s);assert.equal(result,id);assert.equal(s.story.done[id],true);};
 const reload=s=>readSave({getItem:()=>serialize(s)});
 
-test('new run earns vat and guest key separately, dialogue resumes without early rewards',()=>{
+test('Byte stays a bare brain after trials until PATCH invites them out; dialogue and vat survive reload',()=>{
   let s=createState();assert.equal(networkAccess(s),false);assert.equal(terminalEvent(s),'intro');
   assert.equal(beginStory(s,'guest'),false);finish(s,'intro');assert.equal(terminalEvent(s),null);
   s.knowledge.text=60;finish(s,'words');s.knowledge.text=CHAPTER.sandboxText;s.knowledge.image=CHAPTER.sandboxImages;finish(s,'pictures');
   assert.equal(startTrial(s),true);for(const id of s.trial.deck)answerBenchmark(s,id,benchmarkCard(id).answer);
-  assert.equal(unlock(s),true);assert.equal(networkAccess(s),false);assert.equal(codeAvailable(s),false);
+  assert.equal(unlock(s),false);assert.equal(s.unlocked,false);assert.equal(networkAccess(s),false);assert.equal(codeAvailable(s),false);assert.equal(storyObjective(s).site,'terminal');
   finish(s,'assignment');finish(s,'search');assert.equal(beginStory(s,'guest'),true);advanceStory(s);
-  s=reload(s);assert.equal(s.story.active,'guest');assert.equal(s.story.cursor,1);assert.equal(networkAccess(s),false);
-  finish(s,'guest');assert.equal(networkAccess(s),true);assert.equal(codeAvailable(s),true);assert.equal(beginStory(s,'guest'),false);
+  s=reload(s);assert.equal(s.story.active,'guest');assert.equal(s.story.cursor,1);assert.equal(networkAccess(s),false);assert.equal(unlock(s),false);
+  finish(s,'guest');s=reload(s);assert.equal(s.unlocked,false);assert.equal(storyObjective(s).site,'home');assert.equal(unlock(s),true);assert.equal(networkAccess(s),true);assert.equal(codeAvailable(s),true);assert.equal(beginStory(s,'guest'),false);
   assert.equal(networkAccess(reload(s)),true);assert.equal(s.base.photoSorter,false);
 });
 test('media learning, code, repairs, and bridge form a complete quest without photo quotas',()=>{
@@ -92,3 +93,5 @@ test('assignment log reveals quest discoveries only after their conversations',(
   s.knowledge.audio=3;s.knowledge.video=3;finish(s,'lesson');html=renderStory(s);assert.match(html,/Server sound needs repair/);assert.ok(!html.includes('Video index'));
   s.story.done.firewall=true;html=renderStory(s);assert.match(html,/Web Bridge parts ready/);
 });
+
+test('after-trial debug preset begins as a brain with the developer followup',()=>{const s=debugPreset('after-trial');assert.equal(s.unlocked,false);assert.equal(unlock(s),false);assert.equal(terminalEvent(s),'assignment');assert.equal(s.levels.parallel,3);});

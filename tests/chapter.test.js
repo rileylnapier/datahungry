@@ -8,7 +8,7 @@ import { validateContent } from '../src/content.js';
 import starter from '../src/starter-content.js';
 
 const ready=()=>createState({knowledge:{text:CHAPTER.sandboxText,image:CHAPTER.sandboxImages}});
-test('swipe benchmark resumes after reload, cannot advance through collecting, and grants the vat once',()=>{
+test('swipe benchmark resumes after reload, cannot advance through collecting, and enables the vat once PATCH grants access',()=>{
   let s=ready();assert.equal(startTrial(createState()),false);
   assert.equal(startTrial(s),true);assert.equal(startTrial(s),false);
   collect(s,'text');collect(s,'image');bank(s);processBase(s,30);
@@ -21,6 +21,7 @@ test('swipe benchmark resumes after reload, cannot advance through collecting, a
   for(const id of s.trial.deck.slice(1))answerBenchmark(s,id,benchmarkCard(id).answer);
   assert.equal(benchmarkScore(s.trial).correct,12);assert.equal(trialPassed(s),true);
   assert.equal(startTrial(s),false);const points=s.points;
+  assert.equal(unlock(s),false);s.story.done.guest=true;
   assert.equal(unlock(s),true);assert.equal(unlock(s),false);assert.equal(s.points,points);
   assert.equal(readSave({getItem:()=>serialize(s)}).unlocked,true);
 });
@@ -49,7 +50,7 @@ test('malformed attempts reset safely; earned legacy rewards and unlocked saves 
   for(const bad of [{...good,deck:['oops']},{...good,answers:['fox']},{...good,deck:Array(12).fill(good.deck[0])},{...good,answers:Array(13).fill('cat')}]){
     const restored=createState({trial:bad});assert.equal(restored.trial.started,false);assert.equal(trialPassed(restored),false);
   }
-  const old=createState({trial:{started:true,text:6,image:4}});assert.equal(unlock(old),true);
+  const old=createState({trial:{started:true,text:6,image:4}});assert.equal(trialPassed(old),true);assert.equal(unlock(old),false);old.story.done.guest=true;assert.equal(unlock(old),true);
   assert.equal(trialPassed(createState({trial:{started:true,text:5,image:4}})),false);
   assert.equal(createState({unlocked:true}).unlocked,true);
 });

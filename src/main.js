@@ -89,17 +89,17 @@ const bossDef=content.bosses[0];
 const boss={x:0,z:layout.hard.minZ+4,hp:bossDef.integrity,alive:bossDef.enabled&&!state.stressPassed,timer:0,charge:0,view:world.malware()};boss.view.scale.setScalar(2.1);boss.view.visible=boss.alive;
 const labels=[];
 function label(className,text,pos){const el=document.createElement('div');el.className='world-label '+className;el.innerHTML=text;$('labels').append(el);labels.push({el,pos});return el;}
-label('dock-label','BYTE’S HOME<small>Drop off · Build · Grow</small>',()=>new THREE.Vector3(-3,2.1,5));
+label('dock-label base-label','Home',()=>new THREE.Vector3(-3,2.1,5));
 for(const [title,detail,x,z] of [['PROCESSOR','Local computer',10,-20]])label('district-label',`${title}<small>${detail}</small>`,()=>new THREE.Vector3(x,2.5,z));
-const storageLabels=Object.fromEntries(Object.entries(BASE_STORAGE).map(([type,pos])=>[type,label('district-label','',()=>new THREE.Vector3(pos.x,2.5,pos.z))]));
-label('dock-label','DATA SORTER',()=>new THREE.Vector3(BASE_SORTER.x,1.6,BASE_SORTER.z));
-const muncherLabel=label('dock-label','STARTER ANALYZER<small>Ready for data</small>',()=>new THREE.Vector3(BASE_MACHINES.basic.x,2.25,BASE_MACHINES.basic.z));
-const imageMuncherLabel=label('district-label','IMAGE ANALYZER<small>Build at home</small>',()=>new THREE.Vector3(BASE_MACHINES.image.x,state.base.photoSorter?2.85:2.25,BASE_MACHINES.image.z));
+const storageLabels=Object.fromEntries(Object.entries(BASE_STORAGE).map(([type,pos])=>[type,label('district-label base-label','',()=>new THREE.Vector3(pos.x,1.6,pos.z))]));
+label('dock-label base-label','Sorter',()=>new THREE.Vector3(BASE_SORTER.x,1.6,BASE_SORTER.z));
+const muncherLabel=label('dock-label base-label','Analyzer',()=>new THREE.Vector3(BASE_MACHINES.basic.x,2.25,BASE_MACHINES.basic.z));
+const imageMuncherLabel=label('district-label base-label','Image analyzer',()=>new THREE.Vector3(BASE_MACHINES.image.x,state.base.photoSorter?2.85:2.25,BASE_MACHINES.image.z));
 const gateLabel=label('gate-label','LOCAL NETWORK<small>DATA TRIALS · Cats & dogs</small>',()=>new THREE.Vector3(0,3.5,gateZ));
 for(const c of creatures.filter(c=>c.mimic)){const el=label('hallucination-label','HALLUCINATION',()=>new THREE.Vector3(c.x,1.2,c.z));c.warning=el;}
 for(const e of emitters)e.label=label('pipe-label','',()=>new THREE.Vector3(e.x,2,e.z-.9));
 const bossLabel=label('gate-label',bossDef.name,()=>new THREE.Vector3(boss.x,2.7,boss.z));
-const extraLabel=label('dock-label','AUTO SORT<small>Second text & code worker</small>',()=>new THREE.Vector3(BASE_MACHINES.extra.x,2.25,BASE_MACHINES.extra.z));
+const extraLabel=label('dock-label base-label','Auto sort',()=>new THREE.Vector3(BASE_MACHINES.extra.x,2.25,BASE_MACHINES.extra.z));
 const deviceLabels=Object.fromEntries(Object.entries(NETWORK_DEVICES).map(([id,d])=>[id,label('district-label','',()=>new THREE.Vector3(d.x,3,d.z))]));
 for(const d of content.areas[1].districts){const center=districtCenter(d);label(d.safe?'district-label':'danger-label',`${d.name.toUpperCase()}<small>${d.safe?'Connected device · explore for data':'DANGER · malware & corrupted files'}</small>`,()=>new THREE.Vector3(center.x,2.6,d.bounds.minZ+1.5));}
 for(const id of ['courier','harvester']){const el=label('agent-label','',()=>new THREE.Vector3(state.agents[id].x,1.7,state.agents[id].z));el.dataset.agent=id;}
@@ -135,9 +135,9 @@ function renderPanel(){
     p.innerHTML=renderStory(state,terminalMode);
     if($('story-trial'))$('story-trial').innerHTML=chapterShop();
   }else if(panel==='benchmark'){
-    benchmarkView=mountBenchmark(p,state,{onChange:()=>{save();updateUI();},onPersist:save,onClaim:claimVat,onExit:()=>showPanel('dock')});
+    benchmarkView=mountBenchmark(p,state,{onChange:()=>{save();updateUI();},onPersist:save,onContinue:()=>{closePanel();navigateTo(STORY_SITES.terminal.approach);},onExit:()=>showPanel('dock')});
   }else if(panel==='dock'){
-        p.innerHTML=`<span class="eyebrow">BYTE’S HOME</span><h2 id="panel-title">A home for hungry thoughts.</h2><p>Walk onto the home pad to unload, then keep exploring. Analyzers always earn points. Saved examples also build knowledge, which unlocks new upgrades. Spending points never spends knowledge.</p><div class="panel-stat"><span>Points</span><strong id="dock-points">${state.points} ✦</strong></div><div class="dock-tabs" role="group" aria-label="Home upgrades"><button id="base-tab" aria-pressed="${dockTab==='base'}">Build home</button><button id="byte-tab" aria-pressed="${dockTab==='byte'}">Grow Byte</button></div>${dockTab==='base'?baseShop():Object.entries(UPGRADES).filter(([id])=>id!=='clarity'&&(id!=='speed'||state.unlocked)).map(([id,u])=>upgradeCard(id,u)).join('')}<p class="panel-note">${dockTab==='base'?'Dropped-off data and unfinished jobs are saved. Machines rest when you pause or close the game.':`${state.unlocked?'Vat tier unlocked: more memory, reach, decoding, movement speed and up to ten hoses.':`Reach ${CHAPTER.sandboxText} text knowledge and ${CHAPTER.sandboxImages} image knowledge, then pass Data Trials to earn the vat. Choose the upgrades that help you learn faster.`}`}</p><button class="primary" id="explore">Back to exploring <span>↗</span></button>`;
+        p.innerHTML=`<span class="eyebrow">BYTE’S HOME</span><h2 id="panel-title">A home for hungry thoughts.</h2><p>Walk onto the home pad to unload, then keep exploring. Analyzers always earn points. Saved examples also build knowledge, which unlocks new upgrades. Spending points never spends knowledge.</p><div class="panel-stat"><span>Points</span><strong id="dock-points">${state.points} ✦</strong></div><div class="dock-tabs" role="group" aria-label="Home upgrades"><button id="base-tab" aria-pressed="${dockTab==='base'}">Build home</button><button id="byte-tab" aria-pressed="${dockTab==='byte'}">Grow Byte</button></div>${dockTab==='base'?baseShop():Object.entries(UPGRADES).filter(([id])=>id!=='clarity'&&(id!=='speed'||state.unlocked)).map(([id,u])=>upgradeCard(id,u)).join('')}<p class="panel-note">${dockTab==='base'?'Dropped-off data and unfinished jobs are saved. Machines rest when you pause or close the game.':`${state.unlocked?'Vat tier unlocked: more memory, reach, decoding, movement speed and up to ten hoses.':`Reach ${CHAPTER.sandboxText} text knowledge and ${CHAPTER.sandboxImages} image knowledge, then pass Data Trials and return to the developer. Choose the upgrades that help you learn faster.`}`}</p><button class="primary" id="explore">Back to exploring <span>↗</span></button>`;
     $('base-tab').onclick=()=>{dockTab='base';renderPanel();};$('byte-tab').onclick=()=>{dockTab='byte';renderPanel();};
     p.querySelectorAll('[data-upgrade]').forEach(b=>b.onclick=()=>{if(buy(state,b.dataset.upgrade)){save();tone(800);renderPanel();updateUI();}});
     if($('build-muncher'))$('build-muncher').onclick=()=>{if(buildImageMuncher(state)){obstacles.splice(0,obstacles.length,...solidObstacles(content,state.base));save();tone(850,.2);world.burst(new THREE.Vector3(BASE_MACHINES.image.x,0,BASE_MACHINES.image.z),0xc9b8ff,24);toast('Image Analyzer built! Pictures now have their own machine.');renderPanel();updateUI();}};
@@ -148,7 +148,7 @@ function renderPanel(){
     if($('call-courier-home'))$('call-courier-home').onclick=callCourier;
     $('explore').onclick=closePanel;updateBaseUI();
   }else if(panel==='gate'){
-    p.innerHTML=`<span class="eyebrow">SHARED NETWORK ACCESS</span><h2 id="panel-title">A key for the next little leap.</h2><p>${state.unlocked?'Your travel vat is ready. The Training Terminal has a new assignment; follow it to meet PATCH and receive a guest key.':'Pass Data Trials to earn a travel vat. Your next assignment will lead to a guest key for the shared network.'}</p>${storyCard(state)}${!state.unlocked?`<div id="chapter-work">${chapterShop()}</div>`:''}<button class="primary" data-story-go>Go to current assignment ↗</button><button class="restart-button" id="keep-learning">Keep exploring</button>`;
+    p.innerHTML=`<span class="eyebrow">SHARED NETWORK ACCESS</span><h2 id="panel-title">A key for the next little leap.</h2><p>${state.unlocked?'Your travel vat is ready. The Training Terminal has a new assignment; follow it to meet PATCH and receive a guest key.':'Follow your current assignment at the Training Terminal.'}</p>${storyCard(state)}${!state.unlocked?`<div id="chapter-work">${chapterShop()}</div>`:''}<button class="primary" data-story-go>Go to current assignment ↗</button><button class="restart-button" id="keep-learning">Keep exploring</button>`;
     $('keep-learning').onclick=closePanel;
   }else if(panel==='map'){
     const mx=x=>20+(x-layout.minX)/(layout.maxX-layout.minX)*280,my=z=>20+(z-layout.minZ)/(layout.maxZ-layout.minZ)*330;
@@ -179,7 +179,7 @@ function renderPanel(){
 $('panel-content').addEventListener('click',event=>{
   const actionButton=event.target.closest('[data-story-next],[data-story-begin],[data-story-go],[data-story-log]');
   if(actionButton){
-    if(actionButton.hasAttribute('data-story-next')){const completed=advanceStory(state);save();if(completed==='guest'){world.burst(new THREE.Vector3(player.x,1,player.z),0xcaf3a2,24);toast('Guest key received! The shared-network gate is open.');}if(completed==='complete')toast('Shared Network complete! Open Web comes in a future chapter.');renderPanel();updateUI();$('panel').querySelector('[data-story-next], [data-story-begin], [data-story-go]')?.focus();}
+    if(actionButton.hasAttribute('data-story-next')){const completed=advanceStory(state);save();if(completed==='guest'){world.burst(new THREE.Vector3(player.x,1,player.z),0xcaf3a2,24);toast(state.unlocked?'Guest key received! The shared-network gate is open.':'Guest key received! Equip your travel vat at home.');}if(completed==='complete')toast('Shared Network complete! Open Web comes in a future chapter.');renderPanel();updateUI();$('panel').querySelector('[data-story-next], [data-story-begin], [data-story-go]')?.focus();}
     else if(actionButton.dataset.storyBegin){if(beginStory(state,actionButton.dataset.storyBegin)){save();renderPanel();}}
     else if(actionButton.hasAttribute('data-story-go'))goToStoryObjective();
     else openStoryLog();
@@ -192,7 +192,7 @@ $('panel-content').addEventListener('click',event=>{
   else if(action==='connect')claimVat();
   else if(buildProgram(state,action)){if(action==='photoSorter')world.burst(new THREE.Vector3(BASE_MACHINES.image.x,1.8,BASE_MACHINES.image.z),0xc9b8ff,20);obstacles.splice(0,obstacles.length,...solidObstacles(content,state.base));save();tone(850);toast(action==='photoSorter'?'Photo Sorter installed on the Image Analyzer! New image jobs run twice as fast. It is an optional speed upgrade.':'Auto Sort built! A second text and code worker is now running.');renderPanel();updateUI();}
 });
-function claimVat(){if(!unlock(state))return;save();closePanel();tone(800);toast('Animal Recognition learned! Vat equipped! Libraries gain 48 text / 96 image KB for the Local Network.');toast('Travel vat equipped! A real assignment is waiting at the Training Terminal.');navigateTo(STORY_SITES.terminal.approach);}
+function claimVat(){if(!unlock(state))return;save();closePanel();tone(800);toast('Travel vat equipped! Follow PATCH’s lead to the Shared Inbox.');navigateTo(STORY_SITES.inbox.approach);}
 let zoomSaveTimer;
 function changeZoom(value){
   state.zoom=world.setZoom(value);$('zoom-reset').textContent=Math.round(state.zoom*100)+'%';
@@ -252,9 +252,10 @@ $('world').addEventListener('lostpointercapture',e=>{if(pointer?.id===e.pointerI
 function chapterShop(){
   const card=(title,detail,action,caption,enabled)=>`<div class="knowledge-card"><strong>${title}</strong><span>${detail}</span>${action?`<button class="primary" data-chapter="${action}" ${enabled?'':'disabled'}>${caption}</button>`:''}</div>`;
   if(!state.unlocked){
-    if(trialPassed(state))return card('Animal Recognition passed!','Animal Recognition learned! Equip the travel vat, then visit the Training Terminal for your first real assignment.','connect','Equip travel vat',true);
+    if(terminalEvent(state))return '';
+    if(trialPassed(state)&&state.story.done.guest)return card('Ready to travel','PATCH sent a guest key and travel vat plans. Equip your vat to explore the shared network.','connect','Equip travel vat',true);
     if(state.trial.started){const score=benchmarkScore(state.trial);return card('Data Trials · Cats & dogs',score.complete?`Last score: ${score.correct}/12. Practice pictures, words and paragraphs. Free retries.`:`${state.trial.answers.length}/12 sorted. Your answers are saved. Swipe left for cats, right for dogs.`,'trial',score.complete?'Retry Data Trials · Free':'Resume Data Trials',true);}
-    return card('Earn your travel vat',`Text knowledge ${goalProgress(state.knowledge.text,CHAPTER.sandboxText)} · Image knowledge ${goalProgress(state.knowledge.image,CHAPTER.sandboxImages)}. Then swipe cat/dog pictures, words and paragraphs. Pass ${BENCHMARK.passScore}/12, with ${BENCHMARK.minimumPerKind}/4 in each category.`,'trial','Start Data Trials',sandboxReady(state));
+    return card('Data Trials',`Text knowledge ${goalProgress(state.knowledge.text,CHAPTER.sandboxText)} · Image knowledge ${goalProgress(state.knowledge.image,CHAPTER.sandboxImages)}. Then swipe cat/dog pictures, words and paragraphs. Pass ${BENCHMARK.passScore}/12, with ${BENCHMARK.minimumPerKind}/4 in each category.`,'trial','Start Data Trials',sandboxReady(state));
   }
   let cards='';
   if(!state.base.photoSorter)cards+=card('Photo Sorter · Install on Image Analyzer',`Cats ${goalProgress(state.samples.cat,CHAPTER.photoGoal)} · Dogs ${goalProgress(state.samples.dog,CHAPTER.photoGoal)} analyzed and saved. ${!photoReady(state)&&storageCapacity(state,'image')-storageUsed(state,'image')<6?'IMAGE LIBRARY TOO FULL: new photos earn points but will not teach cats or dogs. Expand image storage, then collect more photos. ':''}${!state.base.imageMuncher?'Build the Image Analyzer first. ':''}Collect 6 KB photos at the Photo Library; leave library space to save them. ${state.points<CHAPTER.photoCost?`Need ${CHAPTER.photoCost-state.points} more points. `:''}Install on the Image Analyzer: pictures process 2× faster. Optional: no story, code, or agent unlock depends on this.`,'photoSorter',`Install Photo Sorter · ${CHAPTER.photoCost} ✦`,photoReady(state)&&state.points>=CHAPTER.photoCost);
@@ -280,18 +281,26 @@ function libraryRow(type){
   const space=storageCapacity(state,type),usedKB=storageUsed(state,type),free=space-usedKB,minimum=type==='image'&&state.unlocked?6:TYPES[type].size,blocked=free<minimum;
   const knowledge=state.knowledge[type],title=dataNames[type];
   const goal=type==='text'?(picturesUnlocked(state)?CHAPTER.sandboxText:PROCESSING.textKnowledgeGoal):CHAPTER.sandboxImages;
-  const milestone=type==='text'&&!picturesUnlocked(state)?'Unlock images':'Travel vat';
-  return `<section class="library-learning ${blocked?'library-full':''}" aria-label="${title} library"><div class="library-heading"><strong>${title} library</strong><span>${knowledge} knowledge</span></div><p>${knowledge} saved ${knowledge===1?'example':'examples'} · 1 knowledge each</p>${!state.unlocked?`<p class="library-goal">${milestone}: ${goalProgress(knowledge,goal)} ${type} knowledge</p>`:''}<div class="library-space"><span>Storage used</span><strong>${usedKB} / ${space} KB</strong></div><progress aria-label="${title} storage used" max="${space}" value="${usedKB}"></progress><small class="library-outcome">${blocked?`<strong>${type==='image'&&state.unlocked?'6 KB photo learning paused.':'Knowledge growth paused.'}</strong> ${free===0?'Library full.':`Only ${free} KB free; ${type==='image'&&state.unlocked?'a cat or dog photo':'a file'} needs ${minimum} KB.`} ${type==='image'&&state.unlocked&&!state.base.photoSorter?'Cat/dog photos that do not fit earn points, but do not count toward Photo Sorter. Expand the library, then collect and analyze more photos.':'New files still earn points. Expand this library to save more examples.'}`:`${free} KB free. Files that fit add +1 knowledge after analysis; files that do not fit earn points only.`}</small></section>`;
+  const milestone=type==='text'&&!picturesUnlocked(state)?'Unlock images':'Data Trials';
+  return `<section class="library-learning ${blocked?'library-full':''}" aria-label="${title} library"><div class="library-heading"><strong>${title} library</strong><span>${knowledge} knowledge</span></div><p>${knowledge} saved ${knowledge===1?'example':'examples'} · 1 knowledge each</p>${!state.unlocked&&!trialPassed(state)?`<p class="library-goal">${milestone}: ${goalProgress(knowledge,goal)} ${type} knowledge</p>`:''}<div class="library-space"><span>Storage used</span><strong>${usedKB} / ${space} KB</strong></div><progress aria-label="${title} storage used" max="${space}" value="${usedKB}"></progress><small class="library-outcome">${blocked?`<strong>${type==='image'&&state.unlocked?'6 KB photo learning paused.':'Knowledge growth paused.'}</strong> ${free===0?'Library full.':`Only ${free} KB free; ${type==='image'&&state.unlocked?'a cat or dog photo':'a file'} needs ${minimum} KB.`} ${type==='image'&&state.unlocked&&!state.base.photoSorter?'Cat/dog photos that do not fit earn points, but do not count toward Photo Sorter. Expand the library, then collect and analyze more photos.':'New files still earn points. Expand this library to save more examples.'}`:`${free} KB free. Files that fit add +1 knowledge after analysis; files that do not fit earn points only.`}</small></section>`;
 }
 function updateBaseUI(){
   const summary=processingSummary(state);
-  for(const type of STORAGE_TYPES){storageLabels[type].style.visibility=type==='image'&&!picturesUnlocked(state)?'hidden':'visible';storageLabels[type].innerHTML=`${type.toUpperCase()} LIBRARY<small>${storageUsed(state,type)} / ${storageCapacity(state,type)} KB saved${storageUsed(state,type)>=storageCapacity(state,type)?' · Full · points only':''}${type==='image'&&!picturesUnlocked(state)?' · Learn text first':''}</small>`;}
+  const closeTo=pos=>Math.hypot(player.x-pos.x,player.z-pos.z)<3;
+  for(const type of STORAGE_TYPES){
+    const el=storageLabels[type],stored=storageUsed(state,type),space=storageCapacity(state,type),full=stored>=space;
+    el.style.visibility=type==='image'&&!picturesUnlocked(state)?'hidden':'visible';
+    el.classList.toggle('storage-full',full);
+    el.innerHTML=`${type==='text'?'Text':'Images'}${full?' · Full':''}${closeTo(BASE_STORAGE[type])?`<small>${stored}/${space} KB</small>`:''}`;
+  }
   $('base-status').textContent=`⌂ Home · ${summary.count?`${summary.count} at home · ${summary.value} ✦ pending`:'ready for data'} ↗`;
   for(const e of emitters)e.label.innerHTML=`${e.name.toUpperCase()}<small>${feedAvailable(state,e.type)?`${e.packetSize} KB · ${e.members.filter(c=>c.wait<=0).length>=e.members.length?"Feed full":`every ${e.interval}s`}`:e.type==='image'?`Learn text first · ${goalProgress(state.knowledge.text,PROCESSING.textKnowledgeGoal)}`:'Code is on the shared network'}</small>`;
-  muncherLabel.innerHTML=`STARTER ANALYZER<small>${state.base.basic?`${dataNames[state.base.basic.type]} · ${Math.ceil(state.base.basic.remaining/analyzerRate(state))}s`:'Ready for data'}</small>`;
-  imageMuncherLabel.style.visibility=picturesUnlocked(state)?'visible':'hidden';
-  imageMuncherLabel.innerHTML=`IMAGE ANALYZER<small>${state.base.photoSorter?'Photo Sorter ✓ · 2× pictures':''}${state.base.photoSorter?'<br>':''}${!state.base.imageMuncher?'Build at home':state.base.image?`Picture · ${Math.ceil(state.base.image.remaining/analyzerRate(state))}s`:'Ready for pictures'}</small>`;
+  const machineLabel=(title,id)=>title+(state.base[id]&&closeTo(BASE_MACHINES[id])?`<small>${Math.ceil(state.base[id].remaining/analyzerRate(state))}s</small>`:'');
+  muncherLabel.innerHTML=machineLabel('Analyzer','basic');
+  imageMuncherLabel.style.visibility=state.base.imageMuncher?'visible':'hidden';
+  imageMuncherLabel.innerHTML=machineLabel('Image analyzer','image');
   extraLabel.style.visibility=state.base.autoSort?'visible':'hidden';
+  extraLabel.innerHTML=machineLabel('Auto sort','extra');
   for(const [id,d] of Object.entries(NETWORK_DEVICES))deviceLabels[id].innerHTML=`${d.name.toUpperCase()}<small>${id==='photos'?mediaUnlocked(state)?'Cat / dog pictures · Sound clips nearby':'Cat / dog pictures':id==='documents'?(state.story.done.email?'Repair request accepted ✓':'Unread email · Read nearby'):`CODE SOURCE · 3 KB snippets / 6 KB scripts`}</small>`;
   if($('chapter-work')){
     const container=$('chapter-work'),template=document.createElement('template');template.innerHTML=chapterShop();
@@ -334,7 +343,7 @@ function updateBaseUI(){
 }
 function updateUI(){
   updateBaseUI();
-  $('knowledge-goal').textContent=state.unlocked?'KNOWLEDGE':picturesUnlocked(state)?'KNOWLEDGE → TRAVEL VAT':'KNOWLEDGE → UNLOCK IMAGES';
+  $('knowledge-goal').textContent=state.unlocked||trialPassed(state)?'KNOWLEDGE':picturesUnlocked(state)?'KNOWLEDGE → DATA TRIALS':'KNOWLEDGE → UNLOCK IMAGES';
   $('knowledge-progress').textContent=!picturesUnlocked(state)?`Text ${goalProgress(state.knowledge.text,PROCESSING.textKnowledgeGoal)}`:!state.unlocked?`Text ${goalProgress(state.knowledge.text,CHAPTER.sandboxText)} · Images ${goalProgress(state.knowledge.image,CHAPTER.sandboxImages)}`:`Text ${state.knowledge.text} · Images ${state.knowledge.image}${codeAvailable(state)?` · Code ${state.knowledge.code}`:''}${mediaUnlocked(state)?` · Sound ${goalProgress(state.knowledge.audio,3)} · Video ${goalProgress(state.knowledge.video,3)}`:''}`;
   nearby=null;let nearest=4.5;
   for(const c of creatures){if(c.wait>0||c.zone!==state.zone||!c.view.group.visible)continue;const d=Math.hypot(c.x-player.x,c.z-player.z);if(d<nearest){nearest=d;nearby=c;}}
@@ -490,11 +499,19 @@ function frame(ms){
   world.draw(player,targets,dt,time,destination,interactionDevice);
   damageFeedback.update(paused?0:dt,state.health,!!panel||!state.unlocked);
   const sceneEnd=measuring?performance.now():0,w=world.viewport.width;
+  // Keep one nearby base label; the assignment HUD remains the single objective.
+  let nearbyBaseLabel=null,baseDistance=5;
+  for(const l of labels){
+    if(!l.el.classList.contains('base-label')||l.el.style.visibility==='hidden')continue;
+    const pos=l.pos(),distance=Math.hypot(pos.x-player.x,pos.z-player.z);
+    if(distance<baseDistance){baseDistance=distance;nearbyBaseLabel=l;}
+  }
   for(const l of labels){
     const position=l.pos(),p=world.project(position);
     l.el.style.left=p.x+'px';l.el.style.top=p.y+'px';
     const obscured=p.y<90||(w<=600?p.y<150:(p.x<330&&p.y<390));
-    l.el.style.display=p.visible&&!obscured&&exploration.known(position.x,position.z)?'':'none';
+    const relevant=!l.el.classList.contains('base-label')||l===nearbyBaseLabel;
+    l.el.style.display=relevant&&p.visible&&!obscured&&exploration.known(position.x,position.z)?'':'none';
   }
   for(const c of creatures)if(c.warning)c.warning.style.visibility=state.levels.clarity>=2&&c.wait<=0?'visible':'hidden';
   uiTime+=dt;if(uiTime>.1){updateUI();uiTime=0;}

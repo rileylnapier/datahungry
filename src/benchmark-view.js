@@ -18,7 +18,7 @@ function preloadPictures(){
   })));
 }
 
-export function mountBenchmark(container,state,{onChange,onClaim,onExit,onPersist=onChange}){
+export function mountBenchmark(container,state,{onChange,onContinue,onExit,onPersist=onChange}){
   let feedback=null,drag=null,disposed=false,paused=true,running=false,ready=false,frame=0,last=performance.now(),savedTime=0;
   let feedbackTime=0;
   const stopSpeech=()=>{if('speechSynthesis' in window)window.speechSynthesis.cancel();};
@@ -33,8 +33,8 @@ export function mountBenchmark(container,state,{onChange,onClaim,onExit,onPersis
     if(disposed)return;
     const trial=state.trial,score=benchmarkScore(trial),index=trial.answers.length;
     if(score.complete&&!feedback){
-      container.innerHTML=`<span class="eyebrow">DATA TRIAL 01 · CATS &amp; DOGS</span><h2 id="panel-title">${score.passed?'I know cats and dogs!':'A little more practice.'}</h2><p>${score.passed?'You connected pictures, words and stories. Byte can now recognize animal pictures in the Local Network.':'Try another shuffle. Every mistake is a clue; retrying costs nothing.'}</p><div class="benchmark-score"><strong>${score.correct}<small> / ${trial.deck.length}</small></strong><span>correct · best ${trial.best}/${trial.deck.length}</span></div><div class="benchmark-results">${BENCHMARK_KINDS.map(kind=>`<div><span>${names[kind]}</span><strong>${goalProgress(score.byKind[kind],BENCHMARK.minimumPerKind)}${score.byKind[kind]<BENCHMARK.minimumPerKind?' · practice':''}</strong></div>`).join('')}</div><p class="panel-note">Pass with ${BENCHMARK.passScore}/12 and at least ${BENCHMARK.minimumPerKind}/4 in each category. Knowledge and points are never spent.</p>${score.passed?'<div class="knowledge-card"><strong>Animal Recognition unlocked</strong><span>Travel vat · Local Network · Cat and dog pictures</span></div><button class="primary" id="benchmark-claim">Equip travel vat ↗</button>':'<button class="primary" id="benchmark-retry">Try again · Free</button>'}<button class="restart-button" id="benchmark-exit">Back to Home</button>`;
-      container.querySelector('#benchmark-claim')?.addEventListener('click',onClaim);
+      container.innerHTML=`<span class="eyebrow">DATA TRIAL 01 · CATS &amp; DOGS</span><h2 id="panel-title">${score.passed?'I know cats and dogs!':'A little more practice.'}</h2><p>${score.passed?'You connected pictures, words and stories. Byte can now recognize animal pictures in the Local Network.':'Try another shuffle. Every mistake is a clue; retrying costs nothing.'}</p><div class="benchmark-score"><strong>${score.correct}<small> / ${trial.deck.length}</small></strong><span>correct · best ${trial.best}/${trial.deck.length}</span></div><div class="benchmark-results">${BENCHMARK_KINDS.map(kind=>`<div><span>${names[kind]}</span><strong>${goalProgress(score.byKind[kind],BENCHMARK.minimumPerKind)}${score.byKind[kind]<BENCHMARK.minimumPerKind?' · practice':''}</strong></div>`).join('')}</div><p class="panel-note">Pass with ${BENCHMARK.passScore}/12 and at least ${BENCHMARK.minimumPerKind}/4 in each category. Knowledge and points are never spent.</p>${score.passed?'<div class="knowledge-card"><strong>Animal Recognition unlocked</strong><span>Pictures, words and paragraphs · Cats and dogs ✓</span></div><button class="primary" id="benchmark-claim">Talk to the developer ↗</button>':'<button class="primary" id="benchmark-retry">Try again · Free</button>'}<button class="restart-button" id="benchmark-exit">Back to Home</button>`;
+      container.querySelector('#benchmark-claim')?.addEventListener('click',onContinue);
       container.querySelector('#benchmark-retry')?.addEventListener('click',()=>{if(startTrial(state)){running=false;paused=true;onChange();render();}});
       container.querySelector('#benchmark-exit').onclick=onExit;
       container.querySelector('.primary')?.focus({preventScroll:true});return;

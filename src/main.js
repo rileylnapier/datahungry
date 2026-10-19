@@ -192,7 +192,7 @@ $('panel-content').addEventListener('click',event=>{
   else if(action==='connect')claimVat();
   else if(buildProgram(state,action)){if(action==='photoSorter')world.burst(new THREE.Vector3(BASE_MACHINES.image.x,1.8,BASE_MACHINES.image.z),0xc9b8ff,20);obstacles.splice(0,obstacles.length,...solidObstacles(content,state.base));save();tone(850);toast(action==='photoSorter'?'Photo Sorter installed on the Image Analyzer! New image jobs run twice as fast. It is an optional speed upgrade.':'Auto Sort built! A second text and code worker is now running.');renderPanel();updateUI();}
 });
-function claimVat(){if(!unlock(state))return;save();closePanel();tone(800);toast('Travel vat equipped! Follow PATCH’s lead to the Shared Inbox.');navigateTo(STORY_SITES.inbox.approach);}
+function claimVat(){if(!unlock(state))return;save();closePanel();tone(800);toast('Travel vat equipped · 100 health. Watch your health outside the sandbox; return home to recover.');navigateTo(STORY_SITES.inbox.approach);}
 let zoomSaveTimer;
 function changeZoom(value){
   state.zoom=world.setZoom(value);$('zoom-reset').textContent=Math.round(state.zoom*100)+'%';
@@ -253,7 +253,7 @@ function chapterShop(){
   const card=(title,detail,action,caption,enabled)=>`<div class="knowledge-card"><strong>${title}</strong><span>${detail}</span>${action?`<button class="primary" data-chapter="${action}" ${enabled?'':'disabled'}>${caption}</button>`:''}</div>`;
   if(!state.unlocked){
     if(terminalEvent(state))return '';
-    if(trialPassed(state)&&state.story.done.guest)return card('Ready to travel','PATCH sent a guest key and travel vat plans. Equip your vat to explore the shared network.','connect','Equip travel vat',true);
+    if(trialPassed(state)&&state.story.done.guest)return card('Protection for the trip','Equip PATCH’s travel vat to enter the shared network with 100 health. Malware can hurt you there; home repairs you.','connect','Equip travel vat',true);
     if(state.trial.started){const score=benchmarkScore(state.trial);return card('Data Trials · Cats & dogs',score.complete?`Last score: ${score.correct}/12. Practice pictures, words and paragraphs. Free retries.`:`${state.trial.answers.length}/12 sorted. Your answers are saved. Swipe left for cats, right for dogs.`,'trial',score.complete?'Retry Data Trials · Free':'Resume Data Trials',true);}
     return card('Data Trials',`Text knowledge ${goalProgress(state.knowledge.text,CHAPTER.sandboxText)} · Image knowledge ${goalProgress(state.knowledge.image,CHAPTER.sandboxImages)}. Then swipe cat/dog pictures, words and paragraphs. Pass ${BENCHMARK.passScore}/12, with ${BENCHMARK.minimumPerKind}/4 in each category.`,'trial','Start Data Trials',sandboxReady(state));
   }

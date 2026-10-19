@@ -71,7 +71,7 @@ export function storyObjective(s){
   if(!d.intro)return at('Visit the Training Terminal','Your first assignment is waiting beside home.','terminal');
   if(terminalEvent(s))return at(terminalEvent(s)==='guest'?'Read PATCH’s reply':'New assignment at the terminal','Visit the Training Terminal beside home.','terminal');
   if(!s.unlocked){
-    if(trialPassed(s))return at('Equip your travel vat','PATCH’s guest key received ✓ · equip the vat at home.','home');
+    if(trialPassed(s))return at('Equip your travel vat','Protection for outside the sandbox · equip PATCH’s vat at home.','home');
     if(sandboxReady(s)||s.trial.started)return at('Start Data Trials','Cats left · dogs right · open Home or the Training Terminal.','terminal');
     const blocked= s.knowledge.text<CHAPTER.sandboxText&&storageCapacity(s,'text')-storageUsed(s,'text')<1?'text':picturesUnlocked(s)&&s.knowledge.image<CHAPTER.sandboxImages&&storageCapacity(s,'image')-storageUsed(s,'image')<2?'image':null;
     if(blocked)return at(`Expand your ${blocked} library`,`Keep processing for points · ${storageCost(s,blocked)} points buys more space at home.`,'home');
